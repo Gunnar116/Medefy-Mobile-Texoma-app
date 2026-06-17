@@ -9,7 +9,8 @@
   <!-- Pinned to Babel 7.x: Babel 8 defaults JSX to the automatic runtime, which emits
        `import {jsx} from "react/jsx-runtime"` and breaks this no-bundler UMD prototype. -->
   <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet" />
+  <!-- Typography: Apple SF Pro via the system font stack (-apple-system); renders natively on Apple devices, no webfont needed. -->
+  <meta name="theme-color" content="#0668e0" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -56,57 +57,168 @@ const { useState, useRef, useEffect } = React;
 // ─────────────────────────────────────────────────────────────────────────────
 // DESIGN TOKENS  (Medefy brand values from src/constants/colors.ts)
 // ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// DESIGN TOKENS - mirrored from the customized Untitled UI Figma library.
+// Color values map 1:1 to Figma variables (name noted per line). Same keys as
+// before, so every existing C.x reference inherits the new palette.
+// ─────────────────────────────────────────────────────────────────────────────
 const C = {
-  // Brand
-  brand:           '#2D8DFD',   // PRIMARY from colors.ts
-  brandDark:       '#2882FA',   // MAIN_BLUE
-  brandLight:      '#EBF4FF',
-  brandMid:        '#BFDBFE',
+  // Brand : Medefy Blue ramp (Figma: Colors/Brand (Medefy Blue))
+  brand:           '#0668e0',   // Brand 600 / bg-brand-solid (primary actions)
+  brandDark:       '#04469e',   // Brand 800 (pressed / deep accents)
+  brandLight:      '#ebf5ff',   // utility-brand-50 (subtle brand surface)
+  brandMid:        '#aed6ff',   // utility-brand-200 (brand borders / disabled)
+  brand500:        '#2882fa',   // Brand 500 (hover / bright accent)
+  brandText:       '#0557c2',   // text-brand-secondary 700 (brand-colored text)
 
-  // Navigator bubble
-  navBubble:       '#F1F5F9',
+  // Navigator (AI) bubble : neutral surface
+  navBubble:       '#f5f5f5',   // utility-gray-100
 
-  // Care guide bubble
-  cgBubble:        '#F0FBF4',
-  cgBorder:        '#C6EDD4',
+  // Care guide (human) bubble : soft success surface
+  cgBubble:        '#f0fdf4',
+  cgBorder:        '#9ae6b4',   // utility-success-200
 
-  // State: Waiting (amber)
-  amber:           '#F59E0B',
-  amberLight:      '#FFFBEB',
-  amberBorder:     '#FCD34D',
-  amberText:       '#92400E',
+  // State: Waiting (warning / orange)
+  amber:           '#dd6b20',   // warning accent
+  amberLight:      '#fff9f5',   // utility-warning-50
+  amberBorder:     '#fbd38d',   // utility-warning-200
+  amberText:       '#9c4221',   // utility-warning-700
 
-  // State: Human / Resolved (green)
-  green:           '#10B981',
-  greenLight:      '#D1FAE5',
-  greenBorder:     '#6EE7B7',
-  greenText:       '#065F46',
-  greenDark:       '#059669',
-  greenBg:         '#F0FBF4',
+  // State: Human / Resolved (success / green)
+  green:           '#17b26a',   // success accent
+  greenLight:      '#c6f6d5',   // utility-success-100
+  greenBorder:     '#9ae6b4',   // utility-success-200
+  greenText:       '#276749',   // utility-success-700
+  greenDark:       '#276749',
+  greenBg:         '#f0fdf4',
 
   // State: Resolved (gray)
-  resolvedGray:    '#9CA3AF',
-  resolvedBg:      '#F3F4F6',
+  resolvedGray:    '#676771',   // text-quaternary 500
+  resolvedBg:      '#fafafa',   // bg-secondary
 
   // Error
-  error:           '#DC2626',
-  errorLight:      '#FEF2F2',
+  error:           '#ce2727',   // utility-error-700
+  errorLight:      '#fff0f0',   // utility-error-50
 
-  // Text
-  textPrimary:     '#111827',
-  textSecondary:   '#6B7280',
-  textMuted:       '#9CA3AF',
-  white:           '#FFFFFF',
+  // Text (Figma: Colors/Text)
+  textPrimary:     '#202035',   // text-primary 900
+  textSecondary:   '#535862',   // text-tertiary 600
+  textMuted:       '#676771',   // text-quaternary 500
+  white:           '#ffffff',
 
   // Surface / border
-  surface:         '#FFFFFF',
-  border:          '#E5E7EB',
-  offlineBg:       '#1F2937',
+  surface:         '#ffffff',   // bg-primary
+  surfaceAlt:      '#fafafa',   // bg-secondary
+  border:          '#e9ebee',   // border-secondary
+  borderStrong:    '#d7dcdf',   // border-primary
+  offlineBg:       '#202035',   // neutrals 900
 };
 
-// Font stacks
-const nunito = "'Nunito', -apple-system, sans-serif";
-const sfPro  = "-apple-system, 'Helvetica Neue', Arial, sans-serif";
+// Font stacks : Apple SF Pro (matches the iOS system font)
+const sfText    = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif";
+const sfDisplay = "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif";
+// Back-compat aliases : existing components reference `nunito` (headings) and `sfPro` (body).
+const nunito = sfDisplay;
+const sfPro  = sfText;
+
+// Type / spacing / radius / shadow tokens (Figma: FOUNDATIONS)
+const FW = { regular: 400, medium: 500, semibold: 600, bold: 700 };
+const TYPE = {
+  xs:        { fontSize: 12, lineHeight: '18px' },   // text-xs
+  sm:        { fontSize: 14, lineHeight: '20px' },   // text-sm
+  md:        { fontSize: 16, lineHeight: '24px' },   // text-md
+  lg:        { fontSize: 18, lineHeight: '28px' },   // text-lg
+  xl:        { fontSize: 20, lineHeight: '30px' },   // text-xl
+  displayLg: { fontSize: 48, lineHeight: '60px', letterSpacing: '-0.02em' },
+  displayXl: { fontSize: 60, lineHeight: '72px', letterSpacing: '-0.02em' },
+};
+const SP = { xxs: 2, xs: 4, sm: 6, md: 8, lg: 12, xl: 16, '2xl': 20, '3xl': 24, '4xl': 32, '6xl': 48, '7xl': 64, '8xl': 80 };
+const R  = { sm: 6, md: 8, lg: 10, xl: 12, full: 9999 };
+const SHADOW = {
+  xs: '0 1px 2px rgba(10,13,18,0.05)',
+  lg: '0 12px 16px -4px rgba(10,13,18,0.08), 0 4px 6px -2px rgba(10,13,18,0.03)',
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Btn : canonical button (Figma: Base Components / Buttons/Button)
+// Untitled UI treatment: bg-brand-solid fill, semibold label, radius-md (8px),
+// translucent white inner border + shadow-xs + skeuomorphic inset depth, 4px icon gap.
+// Sizes scale the desktop md (40px) up to a mobile-friendly CTA tap target.
+// ─────────────────────────────────────────────────────────────────────────────
+const BTN_DEPTH = '0 1px 2px rgba(10,13,18,0.05), inset 0 0 0 1px rgba(10,13,18,0.18), inset 0 -2px 0 0 rgba(10,13,18,0.05)';
+const Btn = ({ label, onClick, hierarchy = 'primary', size = 'cta', full = true, iconLeading = null, iconTrailing = null, disabled = false }) => {
+  const SIZES = {
+    sm:  { height: 36, padH: 12, font: 14 },
+    md:  { height: 40, padH: 14, font: 14 },   // Figma md
+    lg:  { height: 44, padH: 16, font: 16 },
+    cta: { height: 52, padH: 20, font: 16 },   // full-width mobile primary
+  };
+  const s = SIZES[size] || SIZES.cta;
+  const LOOKS = {
+    primary:   { background: C.brand,   color: C.white,       border: '2px solid rgba(255,255,255,0.12)', boxShadow: BTN_DEPTH },
+    secondary: { background: C.surface, color: C.textPrimary, border: `1px solid ${C.borderStrong}`,       boxShadow: SHADOW.xs },
+    tertiary:  { background: 'transparent', color: C.brandText, border: '2px solid transparent',           boxShadow: 'none' },
+  };
+  const look = LOOKS[hierarchy] || LOOKS.primary;
+  return (
+    <div onClick={disabled ? undefined : onClick} style={{
+      height: s.height, borderRadius: R.md, padding: `0 ${s.padH}px`, boxSizing: 'border-box',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: SP.xs,
+      width: full ? '100%' : 'auto', cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.5 : 1,
+      ...look,
+    }}>
+      {iconLeading}
+      <span style={{ fontFamily: sfText, fontSize: s.font, fontWeight: FW.semibold, lineHeight: 1, whiteSpace: 'nowrap' }}>{label}</span>
+      {iconTrailing}
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Input : text field (Figma: Base Components / Inputs, Default md)
+// White bg, 1px border-primary, radius-md, shadow-xs. Label text-sm medium,
+// placeholder text-md / text-placeholder, hint text-sm tertiary. Focus = brand
+// ring; destructive = error border + error hint.
+// ─────────────────────────────────────────────────────────────────────────────
+const Input = ({ label, required = false, placeholder = '', value, onChange, hint, destructive = false, iconLeading = null, type = 'text', disabled = false }) => {
+  const [focused, setFocused] = React.useState(false);
+  const borderColor = destructive ? C.error : (focused ? C.brand : C.borderStrong);
+  const ring = destructive
+    ? '0 0 0 4px rgba(206,39,39,0.18)'
+    : (focused ? '0 0 0 4px rgba(6,104,224,0.18)' : SHADOW.xs);
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: SP.sm, width: '100%' }}>
+      {label && (
+        <div style={{ fontFamily: sfText, fontSize: 14, lineHeight: '20px', fontWeight: FW.medium, color: C.textSecondary, display: 'flex', gap: SP.xxs }}>
+          <span>{label}</span>
+          {required && <span style={{ color: C.brand }}>*</span>}
+        </div>
+      )}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: SP.md,
+        background: disabled ? C.surfaceAlt : C.surface,
+        border: `1px solid ${borderColor}`, borderRadius: R.md,
+        padding: '10px 14px', boxShadow: ring, boxSizing: 'border-box',
+        opacity: disabled ? 0.6 : 1,
+      }}>
+        {iconLeading}
+        <input
+          type={type} value={value} onChange={onChange} placeholder={placeholder} disabled={disabled}
+          onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
+          style={{
+            flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent',
+            fontFamily: sfText, fontSize: 16, lineHeight: '24px', color: C.textPrimary, padding: 0,
+          }}
+        />
+      </div>
+      {hint && (
+        <div style={{ fontFamily: sfText, fontSize: 14, lineHeight: '20px', color: destructive ? C.error : C.textSecondary }}>
+          {hint}
+        </div>
+      )}
+    </div>
+  );
+};
 
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -173,8 +285,8 @@ const CGAvatar = ({ name = 'Jordan', size = 32 }) => (
 // Status badge pill
 const Badge = ({ status }) => {
   const map = {
-    ai:       { label: 'AI',       bg: C.brandLight,   border: C.brandMid,   color: C.brand      },
-    guide:    { label: 'Guide',    bg: C.brandLight,   border: C.brandMid,   color: C.brand      },
+    ai:       { label: 'AI',       bg: C.brandLight,   border: C.brandMid,   color: C.brandText  },
+    guide:    { label: 'Guide',    bg: C.brandLight,   border: C.brandMid,   color: C.brandText  },
     waiting:  { label: 'Waiting',  bg: C.amberLight,   border: C.amberBorder, color: C.amberText  },
     active:   { label: 'Active',   bg: C.greenLight,   border: C.greenBorder, color: C.greenText  },
     resolved: { label: 'Resolved', bg: C.resolvedBg,   border: C.border,      color: C.resolvedGray },
@@ -182,10 +294,10 @@ const Badge = ({ status }) => {
   const s = map[status] || map.resolved;
   return (
     <span style={{
-      display: 'inline-flex', alignItems: 'center',
+      display: 'inline-flex', alignItems: 'center', gap: SP.xs,
       background: s.bg, border: `1px solid ${s.border}`,
-      borderRadius: 10, padding: '3px 10px',
-      fontFamily: sfPro, fontSize: 11, fontWeight: 600, color: s.color,
+      borderRadius: R.full, padding: '2px 10px',
+      fontFamily: sfText, fontSize: 12, lineHeight: '18px', fontWeight: FW.medium, color: s.color,
       whiteSpace: 'nowrap',
     }}>{s.label}</span>
   );
@@ -642,15 +754,7 @@ const Composer = ({ state = 'default' }) => {
         borderTop: `1px solid ${C.border}`,
         padding: '12px 16px',
       }}>
-        <div style={{
-          background: C.brand, borderRadius: 12, height: 50,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer',
-        }}>
-          <span style={{ fontFamily: nunito, fontSize: 16, fontWeight: 700, color: C.white }}>
-            Start a new conversation
-          </span>
-        </div>
+        <Btn label="Start a new conversation" />
       </div>
     );
   }
@@ -862,7 +966,7 @@ const FileIcon = ({ size = 40 }) => (
     <svg width={size * 0.55} height={size * 0.62} viewBox="0 0 20 24" fill="none">
       <path d="M2 2a1.2 1.2 0 011.2-1.2H12l6 6V21.8a1.2 1.2 0 01-1.2 1.2H3.2A1.2 1.2 0 012 21.8V2z" stroke={C.brand} strokeWidth="1.3" fill="white"/>
       <path d="M12 0.8V7h6" stroke={C.brand} strokeWidth="1.3" fill="none"/>
-      <text x="10" y="18" fontSize="5.4" fontWeight="700" fill={C.brand} textAnchor="middle" fontFamily="'Nunito', sans-serif">PDF</text>
+      <text x="10" y="18" fontSize="5.4" fontWeight="700" fill={C.brand} textAnchor="middle" fontFamily={sfText}>PDF</text>
     </svg>
   </div>
 );
@@ -1591,28 +1695,12 @@ const LoginShell = ({ go, onSignIn, context, error, contextLabel }) => (
 
         {/* Email field */}
         <div style={{ width: '100%', marginBottom: 12 }}>
-          <div style={{ fontFamily: sfPro, fontSize: 12, fontWeight: 600, color: C.textSecondary, marginBottom: 6 }}>Email</div>
-          <div style={{
-            height: 46, borderRadius: 11,
-            border: `1.5px solid ${error ? C.error : C.border}`,
-            background: C.surface, padding: '0 13px',
-            display: 'flex', alignItems: 'center',
-          }}>
-            <span style={{ fontFamily: sfPro, fontSize: 14, color: C.textMuted }}>you@example.com</span>
-          </div>
+          <Input label="Email" type="email" placeholder="you@example.com" destructive={!!error} />
         </div>
 
         {/* Password field */}
         <div style={{ width: '100%', marginBottom: 14 }}>
-          <div style={{ fontFamily: sfPro, fontSize: 12, fontWeight: 600, color: C.textSecondary, marginBottom: 6 }}>Password</div>
-          <div style={{
-            height: 46, borderRadius: 11,
-            border: `1.5px solid ${error ? C.error : C.border}`,
-            background: C.surface, padding: '0 13px',
-            display: 'flex', alignItems: 'center',
-          }}>
-            <span style={{ fontFamily: sfPro, fontSize: 14, color: C.textMuted, letterSpacing: '0.18em' }}>••••••••</span>
-          </div>
+          <Input label="Password" type="password" placeholder="Enter your password" destructive={!!error} />
         </div>
 
         {/* Inline error — visible but soft; ambiguous about which field was wrong.
@@ -1642,14 +1730,8 @@ const LoginShell = ({ go, onSignIn, context, error, contextLabel }) => (
         )}
 
         {/* Sign in primary CTA */}
-        <div onClick={onSignIn} style={{
-          width: '100%', background: C.brand, borderRadius: 12, height: 50,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', marginBottom: 12,
-        }}>
-          <span style={{ fontFamily: nunito, fontSize: 16, fontWeight: 700, color: C.white }}>
-            Sign in
-          </span>
+        <div style={{ marginBottom: 12 }}>
+          <Btn label="Sign in" onClick={onSignIn} />
         </div>
 
         {/* Need help link */}
@@ -1773,12 +1855,8 @@ const HelpTopicShell = ({ go, title, intro, sections, askNavigatorScreen, messag
         ))}
 
         {/* Primary action — Ask Navigator (matches app's primary CTA: brand fill + white text) */}
-        <div onClick={() => go(askNavigatorScreen)} style={{
-          height: 50, borderRadius: 12, background: C.brand,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', marginTop: 14, marginBottom: 10,
-        }}>
-          <span style={{ fontFamily: nunito, fontSize: 15, fontWeight: 700, color: C.white }}>{`Ask Navigator about ${topicLabel}`}</span>
+        <div style={{ marginTop: 14, marginBottom: 10 }}>
+          <Btn label={`Ask Navigator about ${topicLabel}`} onClick={() => go(askNavigatorScreen)} />
         </div>
 
         {/* Secondary action — Message Medefy (care guide) */}
@@ -1853,14 +1931,8 @@ const SCREENS = {
           Ask Medefy about your benefits, coverage, or care options. If needed, we’ll connect you with a care guide.
         </div>
 
-        <div onClick={() => go('navigator-greeting')} style={{
-          background: C.brand, borderRadius: 12, height: 50, width: 238,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer',
-        }}>
-          <span style={{ fontFamily: nunito, fontSize: 16, fontWeight: 700, color: C.white }}>
-            Start a conversation
-          </span>
+        <div style={{ width: 238 }}>
+          <Btn label="Start a conversation" onClick={() => go('navigator-greeting')} />
         </div>
       </div>
       <AppTabs go={go} current={current}/>
@@ -2358,14 +2430,8 @@ const SCREENS = {
         }}>
           Ask Medefy about your benefits, coverage, or care options. If needed, we'll connect you with a care guide.
         </div>
-        <div onClick={() => go('navigator-greeting')} style={{
-          background: C.brand, borderRadius: 12, height: 50, width: 238,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer',
-        }}>
-          <span style={{ fontFamily: nunito, fontSize: 16, fontWeight: 700, color: C.white }}>
-            Start a conversation
-          </span>
+        <div style={{ width: 238 }}>
+          <Btn label="Start a conversation" onClick={() => go('navigator-greeting')} />
         </div>
       </div>
       <AppTabs go={go} current={current}/>
@@ -3499,14 +3565,8 @@ const SCREENS = {
           <div style={{ fontFamily: sfPro, fontSize: 14, color: C.textSecondary, lineHeight: 1.55, maxWidth: 280 }}>
             Try again in a moment.
           </div>
-          <div onClick={() => go('benefits')} style={{
-            marginTop: 6, background: C.brand, borderRadius: 11, padding: '12px 24px',
-            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-          }}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M2 7a5 5 0 018-3.5M12 7a5 5 0 01-8 3.5M10.5 2v2.5h-2.5M3.5 12v-2.5h2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-            </svg>
-            <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: 'white' }}>Try again</span>
+          <div style={{ marginTop: 6 }}>
+            <Btn label="Try again" onClick={() => go('benefits')} iconLeading={<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7a5 5 0 018-3.5M12 7a5 5 0 01-8 3.5M10.5 2v2.5h-2.5M3.5 12v-2.5h2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>} />
           </div>
         </div>
 
@@ -3578,14 +3638,8 @@ const SCREENS = {
           </div>
 
           {/* Sign in CTA */}
-          <div onClick={() => go('human-conversation')} style={{
-            width: '100%', background: C.brand, borderRadius: 12, height: 50,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', marginBottom: 20,
-          }}>
-            <span style={{ fontFamily: nunito, fontSize: 16, fontWeight: 700, color: C.white }}>
-              Sign in
-            </span>
+          <div style={{ marginBottom: 20 }}>
+            <Btn label="Sign in" onClick={() => go('human-conversation')} />
           </div>
 
           {/* Backend annotation */}
@@ -3901,10 +3955,8 @@ const SCREENS = {
 
             {/* ── Actions ───────────────────────────────────────────── */}
             <div style={{ display: 'flex', gap: 10, padding: '14px 16px 0' }}>
-              <div
-                onClick={() => alert('Share card\n\n[Prototype only]\n\nProduct decision needed: native share sheet, PDF, image, or wallet pass. Requires backend work to compose the artifact.')}
-                style={{ flex: 1, height: 44, borderRadius: 10, background: C.brand, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: C.white }}>Share card</span>
+              <div style={{ flex: 1 }}>
+                <Btn label="Share card" size="lg" onClick={() => alert('Share card\n\n[Prototype only]\n\nProduct decision needed: native share sheet, PDF, image, or wallet pass. Requires backend work to compose the artifact.')} />
               </div>
               <div
                 onClick={() => alert('Download PDF\n\n[Prototype only]\n\nProduct decision needed: generate PDF of structured card data. Requires backend work to compose the PDF artifact.')}
@@ -4154,15 +4206,7 @@ const SCREENS = {
         <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC', position: 'relative' }}>
           {/* Upload CTA */}
           <div style={{ padding: '14px 16px 4px' }}>
-            <div onClick={startUpload} style={{
-              background: C.brand, borderRadius: 12, padding: '12px 16px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, cursor: 'pointer',
-            }}>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <path d="M9 3v12M3 9h12" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
-              </svg>
-              <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: 'white' }}>Upload a document</span>
-            </div>
+            <Btn label="Upload a document" onClick={startUpload} iconLeading={<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3v12M3 9h12" stroke="white" strokeWidth="1.8" strokeLinecap="round"/></svg>} />
           </div>
 
           {/* Search placeholder */}
@@ -4562,16 +4606,7 @@ const SCREENS = {
 
           {/* Actions */}
           <div style={{ padding: '14px 16px 4px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div onClick={() => triggerAction('View document', 'Production opens a signed-URL PDF viewer.')} style={{
-              background: C.brand, borderRadius: 11, padding: '12px 14px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, cursor: 'pointer',
-            }}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="white" strokeWidth="1.4" fill="none"/>
-                <circle cx="8" cy="8" r="2.2" stroke="white" strokeWidth="1.4" fill="none"/>
-              </svg>
-              <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: 'white' }}>View document</span>
-            </div>
+            <Btn label="View document" onClick={() => triggerAction('View document', 'Production opens a signed-URL PDF viewer.')} iconLeading={<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="white" strokeWidth="1.4" fill="none"/><circle cx="8" cy="8" r="2.2" stroke="white" strokeWidth="1.4" fill="none"/></svg>} />
             <div style={{ display: 'flex', gap: 8 }}>
               <div onClick={() => triggerAction('Share', 'Production opens the system share sheet with a signed URL.')} style={{
                 flex: 1, background: C.surface, borderRadius: 11, padding: '11px 14px',
@@ -4748,14 +4783,8 @@ const SCREENS = {
           <div style={{ fontFamily: sfPro, fontSize: 14, color: C.textSecondary, lineHeight: 1.55, maxWidth: 280 }}>
             Upload documents or send files in chat to keep them here.
           </div>
-          <div onClick={() => { setPendingUploadOpen(true); go('documents'); }} style={{
-            marginTop: 10, background: C.brand, borderRadius: 11, padding: '12px 22px',
-            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-          }}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 3v10M3 8h10" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
-            </svg>
-            <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: 'white' }}>Upload a document</span>
+          <div style={{ marginTop: 10 }}>
+            <Btn label="Upload a document" onClick={() => { setPendingUploadOpen(true); go('documents'); }} iconLeading={<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="white" strokeWidth="1.8" strokeLinecap="round"/></svg>} />
           </div>
         </div>
         <Annotation text="Empty state appears when list_documents() returns 0 rows. CTA opens the same upload action sheet as the populated state."/>
@@ -5753,12 +5782,8 @@ const SCREENS = {
           <div style={{ fontFamily: sfPro, fontSize: 13.5, color: C.textSecondary, lineHeight: 1.55, marginBottom: 22 }}>
             Try again in a moment.
           </div>
-          <div onClick={() => go('help-center')} style={{
-            height: 46, borderRadius: 11, background: C.brand,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', maxWidth: 220, margin: '0 auto',
-          }}>
-            <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: 'white' }}>Try again</span>
+          <div style={{ maxWidth: 220, margin: '0 auto' }}>
+            <Btn label="Try again" size="lg" onClick={() => go('help-center')} />
           </div>
         </div>
       </div>
@@ -6017,17 +6042,7 @@ const SCREENS = {
           isFirst={true}
         />
         <div style={{ display: 'flex', justifyContent: 'center', margin: '10px 0 6px' }}>
-          <div onClick={() => go('request-human')} style={{
-            background: C.brand, borderRadius: 11, padding: '11px 18px',
-            display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-          }}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <circle cx="7" cy="5" r="2.5" stroke="white" strokeWidth="1.4" fill="none"/>
-              <path d="M2 12c0-2.5 2-4 5-4s5 1.5 5 4" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/>
-            </svg>
-            <span style={{ fontFamily: nunito, fontSize: 13, fontWeight: 700, color: 'white' }}>Request a care guide</span>
-          </div>
+          <Btn label="Request a care guide" size="md" full={false} onClick={() => go('request-human')} iconLeading={<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="white" strokeWidth="1.4" fill="none"/><path d="M2 12c0-2.5 2-4 5-4s5 1.5 5 4" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/></svg>} />
         </div>
       </MsgList>
       <EscalationBar onPress={() => go('request-human')}/>
@@ -6059,17 +6074,7 @@ const SCREENS = {
           isFirst={true}
         />
         <div style={{ display: 'flex', justifyContent: 'center', margin: '10px 0 6px' }}>
-          <div onClick={() => go('request-human')} style={{
-            background: C.brand, borderRadius: 11, padding: '11px 18px',
-            display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-          }}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <circle cx="7" cy="5" r="2.5" stroke="white" strokeWidth="1.4" fill="none"/>
-              <path d="M2 12c0-2.5 2-4 5-4s5 1.5 5 4" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/>
-            </svg>
-            <span style={{ fontFamily: nunito, fontSize: 13, fontWeight: 700, color: 'white' }}>Request a care guide</span>
-          </div>
+          <Btn label="Request a care guide" size="md" full={false} onClick={() => go('request-human')} iconLeading={<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="white" strokeWidth="1.4" fill="none"/><path d="M2 12c0-2.5 2-4 5-4s5 1.5 5 4" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/></svg>} />
         </div>
       </MsgList>
       <EscalationBar onPress={() => go('request-human')}/>
@@ -6102,17 +6107,7 @@ const SCREENS = {
           isFirst={true}
         />
         <div style={{ display: 'flex', justifyContent: 'center', margin: '10px 0 6px' }}>
-          <div onClick={() => go('request-human')} style={{
-            background: C.brand, borderRadius: 11, padding: '11px 18px',
-            display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-          }}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <circle cx="7" cy="5" r="2.5" stroke="white" strokeWidth="1.4" fill="none"/>
-              <path d="M2 12c0-2.5 2-4 5-4s5 1.5 5 4" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/>
-            </svg>
-            <span style={{ fontFamily: nunito, fontSize: 13, fontWeight: 700, color: 'white' }}>Request a care guide</span>
-          </div>
+          <Btn label="Request a care guide" size="md" full={false} onClick={() => go('request-human')} iconLeading={<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="white" strokeWidth="1.4" fill="none"/><path d="M2 12c0-2.5 2-4 5-4s5 1.5 5 4" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/></svg>} />
         </div>
       </MsgList>
       <EscalationBar onPress={() => go('request-human')}/>
@@ -6970,13 +6965,7 @@ const SCREENS = {
             <div style={{ fontFamily: sfPro, fontSize: 13.5, color: C.textSecondary, lineHeight: 1.5, marginBottom: 18 }}>
               Please sign in again to continue.
             </div>
-            <div onClick={signOut} style={{
-              height: 46, borderRadius: 11,
-              background: C.brand, cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: 'white' }}>Sign in</span>
-            </div>
+            <Btn label="Sign in" size="lg" onClick={signOut} />
           </div>
         </div>
         {/* Prototype caption on the obscured surface — kept out of the modal so the modal stays clean */}
@@ -7059,12 +7048,8 @@ const SCREENS = {
                   }}>
                     <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: C.textSecondary }}>Cancel</span>
                   </div>
-                  <div onClick={() => { setForgotEmailModal(false); go('signed-out-support'); }} style={{
-                    flex: 1, height: 44, borderRadius: 10,
-                    background: C.brand, cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: 'white' }}>Contact support</span>
+                  <div style={{ flex: 1 }}>
+                    <Btn label="Contact support" size="lg" onClick={() => { setForgotEmailModal(false); go('signed-out-support'); }} />
                   </div>
                 </div>
               </div>
@@ -7104,12 +7089,8 @@ const SCREENS = {
           </div>
 
           {/* CTAs — placeholders. Contact support does not open authenticated chat. */}
-          <div style={{
-            height: 50, borderRadius: 12, background: C.brand,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', marginBottom: 10,
-          }}>
-            <span style={{ fontFamily: nunito, fontSize: 15, fontWeight: 700, color: C.white }}>Contact support</span>
+          <div style={{ marginBottom: 10 }}>
+            <Btn label="Contact support" />
           </div>
           <div onClick={() => go('login')} style={{
             height: 46, borderRadius: 11, background: C.surface,
@@ -7183,12 +7164,8 @@ const SCREENS = {
           </div>
 
           {/* Primary */}
-          <div onClick={() => go('forgot-password-confirmation')} style={{
-            height: 50, borderRadius: 12, background: C.brand,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', marginBottom: 12,
-          }}>
-            <span style={{ fontFamily: nunito, fontSize: 16, fontWeight: 700, color: C.white }}>Send reset instructions</span>
+          <div style={{ marginBottom: 12 }}>
+            <Btn label="Send reset instructions" onClick={() => go('forgot-password-confirmation')} />
           </div>
 
           {/* Secondary link */}
@@ -7254,12 +7231,8 @@ const SCREENS = {
             If an account exists for that email, we&rsquo;ll send reset instructions.
           </div>
 
-          <div onClick={() => go('login')} style={{
-            width: '100%', height: 50, borderRadius: 12, background: C.brand,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', marginBottom: 16,
-          }}>
-            <span style={{ fontFamily: nunito, fontSize: 16, fontWeight: 700, color: C.white }}>Back to sign in</span>
+          <div style={{ marginBottom: 16 }}>
+            <Btn label="Back to sign in" onClick={() => go('login')} />
           </div>
 
           <div style={{ width: '100%' }}>
@@ -7308,13 +7281,7 @@ const SCREENS = {
             <div style={{ fontFamily: sfPro, fontSize: 13.5, color: C.textSecondary, lineHeight: 1.55, marginBottom: 18 }}>
               To keep using Medefy, please update to the latest version.
             </div>
-            <div style={{
-              height: 46, borderRadius: 11,
-              background: C.brand, cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: 'white' }}>Update app</span>
-            </div>
+            <Btn label="Update app" size="lg" />
           </div>
         </div>
         <div style={{
@@ -7356,12 +7323,8 @@ const SCREENS = {
             Get updates when a care guide replies or your conversation changes.
           </div>
 
-          <div onClick={() => go('home-default')} style={{
-            width: '100%', height: 50, borderRadius: 12, background: C.brand,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', marginBottom: 10,
-          }}>
-            <span style={{ fontFamily: nunito, fontSize: 16, fontWeight: 700, color: C.white }}>Enable notifications</span>
+          <div style={{ marginBottom: 10 }}>
+            <Btn label="Enable notifications" onClick={() => go('home-default')} />
           </div>
           <div onClick={() => go('home-default')} style={{
             width: '100%', height: 46, borderRadius: 11, background: C.surface,
@@ -7411,12 +7374,8 @@ const SCREENS = {
             Use Face ID to sign in quickly and securely.
           </div>
 
-          <div onClick={() => go('home-default')} style={{
-            width: '100%', height: 50, borderRadius: 12, background: C.brand,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', marginBottom: 10,
-          }}>
-            <span style={{ fontFamily: nunito, fontSize: 16, fontWeight: 700, color: C.white }}>Enable Face ID</span>
+          <div style={{ marginBottom: 10 }}>
+            <Btn label="Enable Face ID" onClick={() => go('home-default')} />
           </div>
           <div onClick={() => go('home-default')} style={{
             width: '100%', height: 46, borderRadius: 11, background: C.surface,
@@ -7504,11 +7463,8 @@ const SCREENS = {
           <div style={{ fontFamily: sfPro, fontSize: 14, color: C.textSecondary, lineHeight: 1.55, maxWidth: 280 }}>
             Try again in a moment.
           </div>
-          <div onClick={() => go('notification-settings')} style={{
-            marginTop: 6, background: C.brand, borderRadius: 11, padding: '12px 24px',
-            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-          }}>
-            <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: 'white' }}>Try again</span>
+          <div style={{ marginTop: 6 }}>
+            <Btn label="Try again" onClick={() => go('notification-settings')} />
           </div>
         </div>
         <div style={{ padding: '0 16px' }}>
@@ -7553,11 +7509,8 @@ const SCREENS = {
           <div style={{ fontFamily: sfPro, fontSize: 14, color: C.textSecondary, lineHeight: 1.55, maxWidth: 290 }}>
             Some Medefy updates won't reach you until you turn notifications on for this app in your device settings.
           </div>
-          <div onClick={() => alert('Prototype: opens the OS app-settings deep link.')} style={{
-            marginTop: 6, background: C.brand, borderRadius: 11, padding: '12px 24px',
-            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-          }}>
-            <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: 'white' }}>Open Settings</span>
+          <div style={{ marginTop: 6 }}>
+            <Btn label="Open Settings" onClick={() => alert('Prototype: opens the OS app-settings deep link.')} />
           </div>
         </div>
         <div style={{ padding: '8px 16px 16px' }}>
@@ -8131,17 +8084,7 @@ const SCREENS = {
             isFirst={true}
           />
           <div style={{ display: 'flex', justifyContent: 'center', margin: '10px 0 6px' }}>
-            <div onClick={() => go('request-human')} style={{
-              background: C.brand, borderRadius: 11, padding: '11px 18px',
-              display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            }}>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <circle cx="7" cy="5" r="2.5" stroke="white" strokeWidth="1.4" fill="none"/>
-                <path d="M2 12c0-2.5 2-4 5-4s5 1.5 5 4" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/>
-              </svg>
-              <span style={{ fontFamily: nunito, fontSize: 13, fontWeight: 700, color: 'white' }}>Request a care guide</span>
-            </div>
+            <Btn label="Request a care guide" size="md" full={false} onClick={() => go('request-human')} iconLeading={<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="white" strokeWidth="1.4" fill="none"/><path d="M2 12c0-2.5 2-4 5-4s5 1.5 5 4" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/></svg>} />
           </div>
         </MsgList>
         <EscalationBar onPress={() => go('request-human')}/>
@@ -8284,14 +8227,8 @@ const SCREENS = {
           <div style={{ fontFamily: sfPro, fontSize: 14, color: C.textSecondary, lineHeight: 1.55, maxWidth: 280 }}>
             Try again in a moment.
           </div>
-          <div onClick={() => go('claims')} style={{
-            marginTop: 6, background: C.brand, borderRadius: 11, padding: '12px 24px',
-            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-          }}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M2 7a5 5 0 018-3.5M12 7a5 5 0 01-8 3.5M10.5 2v2.5h-2.5M3.5 12v-2.5h2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-            </svg>
-            <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: 'white' }}>Try again</span>
+          <div style={{ marginTop: 6 }}>
+            <Btn label="Try again" onClick={() => go('claims')} iconLeading={<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7a5 5 0 018-3.5M12 7a5 5 0 01-8 3.5M10.5 2v2.5h-2.5M3.5 12v-2.5h2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>} />
           </div>
         </div>
 
@@ -9178,14 +9115,8 @@ const SCREENS = {
           <div style={{ fontFamily: sfPro, fontSize: 14, color: C.textSecondary, lineHeight: 1.55, maxWidth: 280 }}>
             Try again in a moment.
           </div>
-          <div onClick={() => go('rx')} style={{
-            marginTop: 6, background: C.brand, borderRadius: 11, padding: '12px 24px',
-            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-          }}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M2 7a5 5 0 018-3.5M12 7a5 5 0 01-8 3.5M10.5 2v2.5h-2.5M3.5 12v-2.5h2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-            </svg>
-            <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: 'white' }}>Try again</span>
+          <div style={{ marginTop: 6 }}>
+            <Btn label="Try again" onClick={() => go('rx')} iconLeading={<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7a5 5 0 018-3.5M12 7a5 5 0 01-8 3.5M10.5 2v2.5h-2.5M3.5 12v-2.5h2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>} />
           </div>
         </div>
 
@@ -9240,13 +9171,7 @@ const SCREENS = {
             }}>
               <span style={{ fontFamily: nunito, fontSize: 13, fontWeight: 700, color: C.brand }}>Change search</span>
             </div>
-            <div onClick={() => go('navigator-greeting')} style={{
-              background: C.brand, borderRadius: 11, padding: '11px 18px',
-              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-            }}>
-              <MedefyMark size={14}/>
-              <span style={{ fontFamily: nunito, fontSize: 13, fontWeight: 700, color: 'white' }}>Ask Navigator for help</span>
-            </div>
+            <Btn label="Ask Navigator for help" size="md" full={false} onClick={() => go('navigator-greeting')} iconLeading={<MedefyMark size={14}/>} />
           </div>
         </div>
 
@@ -9504,17 +9429,7 @@ const SCREENS = {
             isFirst={true}
           />
           <div style={{ display: 'flex', justifyContent: 'center', margin: '10px 0 6px' }}>
-            <div onClick={() => go('request-human')} style={{
-              background: C.brand, borderRadius: 11, padding: '11px 18px',
-              display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            }}>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <circle cx="7" cy="5" r="2.5" stroke="white" strokeWidth="1.4" fill="none"/>
-                <path d="M2 12c0-2.5 2-4 5-4s5 1.5 5 4" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/>
-              </svg>
-              <span style={{ fontFamily: nunito, fontSize: 13, fontWeight: 700, color: 'white' }}>Request a care guide</span>
-            </div>
+            <Btn label="Request a care guide" size="md" full={false} onClick={() => go('request-human')} iconLeading={<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="white" strokeWidth="1.4" fill="none"/><path d="M2 12c0-2.5 2-4 5-4s5 1.5 5 4" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/></svg>} />
           </div>
         </MsgList>
         <EscalationBar onPress={() => go('request-human')}/>
@@ -10087,17 +10002,7 @@ const SCREENS = {
             isFirst={true}
           />
           <div style={{ display: 'flex', justifyContent: 'center', margin: '10px 0 6px' }}>
-            <div onClick={() => go('request-human')} style={{
-              background: C.brand, borderRadius: 11, padding: '11px 18px',
-              display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            }}>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <circle cx="7" cy="5" r="2.5" stroke="white" strokeWidth="1.4" fill="none"/>
-                <path d="M2 12c0-2.5 2-4 5-4s5 1.5 5 4" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/>
-              </svg>
-              <span style={{ fontFamily: nunito, fontSize: 13, fontWeight: 700, color: 'white' }}>Request a care guide</span>
-            </div>
+            <Btn label="Request a care guide" size="md" full={false} onClick={() => go('request-human')} iconLeading={<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="white" strokeWidth="1.4" fill="none"/><path d="M2 12c0-2.5 2-4 5-4s5 1.5 5 4" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/></svg>} />
           </div>
         </MsgList>
         <EscalationBar onPress={() => go('request-human')}/>
@@ -10313,17 +10218,7 @@ const SCREENS = {
             isFirst={true}
           />
           <div style={{ display: 'flex', justifyContent: 'center', margin: '10px 0 6px' }}>
-            <div onClick={() => go('request-human')} style={{
-              background: C.brand, borderRadius: 11, padding: '11px 18px',
-              display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            }}>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <circle cx="7" cy="5" r="2.5" stroke="white" strokeWidth="1.4" fill="none"/>
-                <path d="M2 12c0-2.5 2-4 5-4s5 1.5 5 4" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/>
-              </svg>
-              <span style={{ fontFamily: nunito, fontSize: 13, fontWeight: 700, color: 'white' }}>Request a care guide</span>
-            </div>
+            <Btn label="Request a care guide" size="md" full={false} onClick={() => go('request-human')} iconLeading={<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="white" strokeWidth="1.4" fill="none"/><path d="M2 12c0-2.5 2-4 5-4s5 1.5 5 4" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/></svg>} />
           </div>
         </MsgList>
         <EscalationBar onPress={() => go('request-human')}/>
@@ -10458,14 +10353,8 @@ const SCREENS = {
           <div style={{ fontFamily: sfPro, fontSize: 14, color: C.textSecondary, lineHeight: 1.55, maxWidth: 280 }}>
             Try again in a moment.
           </div>
-          <div onClick={() => go('appointments')} style={{
-            marginTop: 6, background: C.brand, borderRadius: 11, padding: '12px 24px',
-            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-          }}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M2 7a5 5 0 018-3.5M12 7a5 5 0 01-8 3.5M10.5 2v2.5h-2.5M3.5 12v-2.5h2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-            </svg>
-            <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: 'white' }}>Try again</span>
+          <div style={{ marginTop: 6 }}>
+            <Btn label="Try again" onClick={() => go('appointments')} iconLeading={<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7a5 5 0 018-3.5M12 7a5 5 0 01-8 3.5M10.5 2v2.5h-2.5M3.5 12v-2.5h2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>} />
           </div>
         </div>
         <div style={{ padding: '0 16px' }}>
@@ -11022,17 +10911,7 @@ const SCREENS = {
             isFirst={true}
           />
           <div style={{ display: 'flex', justifyContent: 'center', margin: '10px 0 6px' }}>
-            <div onClick={() => go('request-human')} style={{
-              background: C.brand, borderRadius: 11, padding: '11px 18px',
-              display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            }}>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <circle cx="7" cy="5" r="2.5" stroke="white" strokeWidth="1.4" fill="none"/>
-                <path d="M2 12c0-2.5 2-4 5-4s5 1.5 5 4" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/>
-              </svg>
-              <span style={{ fontFamily: nunito, fontSize: 13, fontWeight: 700, color: 'white' }}>Request a care guide</span>
-            </div>
+            <Btn label="Request a care guide" size="md" full={false} onClick={() => go('request-human')} iconLeading={<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="white" strokeWidth="1.4" fill="none"/><path d="M2 12c0-2.5 2-4 5-4s5 1.5 5 4" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/></svg>} />
           </div>
         </MsgList>
         <EscalationBar onPress={() => go('request-human')}/>
@@ -11128,14 +11007,8 @@ const SCREENS = {
           <div style={{ fontFamily: sfPro, fontSize: 14, color: C.textSecondary, lineHeight: 1.55, maxWidth: 280 }}>
             Try again in a moment.
           </div>
-          <div onClick={() => go('provider-results')} style={{
-            marginTop: 6, background: C.brand, borderRadius: 11, padding: '12px 24px',
-            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-          }}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M2 7a5 5 0 018-3.5M12 7a5 5 0 01-8 3.5M10.5 2v2.5h-2.5M3.5 12v-2.5h2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-            </svg>
-            <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: 'white' }}>Try again</span>
+          <div style={{ marginTop: 6 }}>
+            <Btn label="Try again" onClick={() => go('provider-results')} iconLeading={<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7a5 5 0 018-3.5M12 7a5 5 0 01-8 3.5M10.5 2v2.5h-2.5M3.5 12v-2.5h2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>} />
           </div>
         </div>
 
@@ -11213,13 +11086,7 @@ const SCREENS = {
             }}>
               <span style={{ fontFamily: nunito, fontSize: 13, fontWeight: 700, color: C.brand }}>Change search</span>
             </div>
-            <div onClick={() => go('navigator-greeting')} style={{
-              background: C.brand, borderRadius: 11, padding: '11px 18px',
-              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-            }}>
-              <MedefyMark size={14}/>
-              <span style={{ fontFamily: nunito, fontSize: 13, fontWeight: 700, color: 'white' }}>Ask Navigator for help</span>
-            </div>
+            <Btn label="Ask Navigator for help" size="md" full={false} onClick={() => go('navigator-greeting')} iconLeading={<MedefyMark size={14}/>} />
           </div>
         </div>
 
