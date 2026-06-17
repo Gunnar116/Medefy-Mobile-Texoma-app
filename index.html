@@ -73,6 +73,7 @@ const C = {
 
   // Navigator (AI) bubble : neutral surface
   navBubble:       '#f5f5f5',   // utility-gray-100
+  surfaceMuted:    '#f5f5f5',   // neutral muted surface (app/chat surfaces; same value, clearer name than navBubble)
 
   // Care guide (human) bubble : soft success surface
   cgBubble:        '#f0fdf4',
@@ -155,9 +156,11 @@ const Btn = ({ label, onClick, hierarchy = 'primary', size = 'cta', full = true,
   };
   const s = SIZES[size] || SIZES.cta;
   const LOOKS = {
-    primary:   { background: C.brand,   color: C.white,       border: '2px solid rgba(255,255,255,0.12)', boxShadow: BTN_DEPTH },
-    secondary: { background: C.surface, color: C.textPrimary, border: `1px solid ${C.borderStrong}`,       boxShadow: SHADOW.xs },
-    tertiary:  { background: 'transparent', color: C.brandText, border: '2px solid transparent',           boxShadow: 'none' },
+    primary:        { background: C.brand,      color: C.white,       border: '2px solid rgba(255,255,255,0.12)', boxShadow: BTN_DEPTH },
+    secondary:      { background: C.surface,    color: C.textPrimary, border: `1px solid ${C.borderStrong}`,       boxShadow: SHADOW.xs },
+    secondaryColor: { background: C.brandLight, color: C.brandText,   border: `1px solid ${C.brandMid}`,           boxShadow: SHADOW.xs },
+    destructive:    { background: C.error,      color: C.white,       border: '2px solid rgba(255,255,255,0.12)', boxShadow: BTN_DEPTH },
+    tertiary:       { background: 'transparent', color: C.brandText,  border: '2px solid transparent',             boxShadow: 'none' },
   };
   const look = LOOKS[hierarchy] || LOOKS.primary;
   return (
@@ -302,6 +305,25 @@ const Badge = ({ status }) => {
     }}>{s.label}</span>
   );
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AskNavCard : recurring "Ask Navigator about X" entry point (brand-tinted card CTA)
+// Unifies the inline variants scattered across screens into one token-driven card.
+// ─────────────────────────────────────────────────────────────────────────────
+const AskNavCard = ({ title, subtitle = 'Get help understanding how this applies to you', onClick, icon }) => (
+  <div onClick={onClick} style={{
+    background: C.brandLight, borderRadius: R.xl, padding: '14px 16px',
+    border: `1px solid ${C.brandMid}`, boxShadow: SHADOW.xs, cursor: onClick ? 'pointer' : 'default',
+    display: 'flex', alignItems: 'center', gap: SP.lg, marginBottom: SP.lg,
+  }}>
+    {icon || <MedefyMark size={26}/>}
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ fontFamily: sfText, fontSize: 14, lineHeight: '20px', fontWeight: FW.semibold, color: C.brandText, marginBottom: 2 }}>{title}</div>
+      <div style={{ fontFamily: sfText, fontSize: 12, lineHeight: '18px', color: C.brandText, opacity: 0.72 }}>{subtitle}</div>
+    </div>
+    <div style={{ flexShrink: 0, color: C.brand, fontSize: 22, lineHeight: 1, fontWeight: 300, marginLeft: SP.xs }}>›</div>
+  </div>
+);
 
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -644,7 +666,7 @@ const SysMsg = ({ text, variant = 'default' }) => {
       <div style={{ display: 'flex', justifyContent: 'center', margin: '8px 0' }}>
         <div style={{
           background: C.amberLight, border: `1px solid ${C.amberBorder}`,
-          borderRadius: 10, padding: '8px 14px', maxWidth: 280,
+          borderRadius: R.lg, padding: '8px 14px', maxWidth: 280,
         }}>
           <span style={{
             fontFamily: sfPro, fontSize: 13, color: C.amberText,
@@ -778,7 +800,7 @@ const Composer = ({ state = 'default' }) => {
 
       {/* Input */}
       <div style={{
-        flex: 1, background: '#F9FAFB', borderRadius: 12,
+        flex: 1, background: C.navBubble, borderRadius: R.xl,
         border: `${isWaiting ? '1.5px' : '1px'} solid ${isWaiting ? C.amberBorder : C.border}`,
         padding: '10px 14px', minHeight: 44,
         display: 'flex', alignItems: 'center',
@@ -857,7 +879,7 @@ const AttachBubble = () => (
     }}>
       {/* Image preview tile */}
       <div style={{
-        width: '100%', height: 108, borderRadius: 8, marginBottom: 9,
+        width: '100%', height: 108, borderRadius: R.md, marginBottom: 9,
         background: 'rgba(0,0,0,0.25)',
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center', gap: 5,
@@ -895,7 +917,7 @@ const FieldBadge = ({ status }) => {
     current:   { label: '✓ Current RPC',       bg: '#D1FAE5', color: '#065F46', border: '#6EE7B7' },
     extension: { label: '↗ Needs extension',   bg: '#FEF3C7', color: '#92400E', border: '#FCD34D' },
     gap:       { label: '✗ Backend gap',        bg: '#FEE2E2', color: '#991B1B', border: '#FCA5A5' },
-    unknown:   { label: '? Carrier-provided',   bg: '#F1F5F9', color: '#475569', border: '#CBD5E1' },
+    unknown:   { label: '? Carrier-provided',   bg: C.navBubble, color: '#475569', border: '#CBD5E1' },
   }[status] || {};
   return (
     <span style={{
@@ -932,7 +954,7 @@ const CardField = ({ label, value, status, note }) => (
 
 // Section header for card detail groups
 const CardSection = ({ title }) => (
-  <div style={{ padding: '14px 16px 6px', background: '#F8FAFC', borderBottom: `1px solid ${C.border}` }}>
+  <div style={{ padding: '14px 16px 6px', background: C.surfaceAlt, borderBottom: `1px solid ${C.border}` }}>
     <span style={{ fontFamily: sfPro, fontSize: 11, fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{title}</span>
   </div>
 );
@@ -978,7 +1000,7 @@ const SourcePill = ({ source }) => {
     chat:   { bg: C.greenLight,   color: C.greenDark,    border: C.greenBorder },
     self:   { bg: C.brandLight,   color: C.brand,        border: C.brandMid    },
     cg:     { bg: '#FEF3C7',      color: '#92400E',      border: '#FCD34D'     },
-    system: { bg: '#F1F5F9',      color: C.textSecondary, border: C.border      },
+    system: { bg: C.navBubble,      color: C.textSecondary, border: C.border      },
   }[meta.tone];
   return (
     <span style={{
@@ -995,7 +1017,7 @@ const SourcePill = ({ source }) => {
 const TypePill = ({ type }) => (
   <span style={{
     fontFamily: sfPro, fontSize: 11, fontWeight: 500,
-    color: '#475569', background: '#F1F5F9',
+    color: '#475569', background: C.navBubble,
     border: '1px solid #E2E8F0',
     borderRadius: 4, padding: '1px 6px',
     whiteSpace: 'nowrap',
@@ -1582,7 +1604,7 @@ const APPOINTMENTS_FILTERS = ['Upcoming', 'Past', 'Tasks'];
 // Appointment / care-task status badge
 const APPT_STATUS_TONE = {
   'upcoming':     { label: 'Upcoming',     bg: C.brandLight,  color: C.brand,        border: C.brandMid,    dot: C.brand     },
-  'past':         { label: 'Past',         bg: '#F1F5F9',     color: C.textSecondary, border: C.border,     dot: C.textMuted },
+  'past':         { label: 'Past',         bg: C.navBubble,     color: C.textSecondary, border: C.border,     dot: C.textMuted },
   'completed':    { label: 'Completed',    bg: C.greenLight,  color: C.greenDark,    border: C.greenBorder, dot: C.greenDark },
   'check-needed': { label: 'Check needed', bg: C.amberLight,  color: C.amberText,    border: C.amberBorder, dot: C.amber     },
 };
@@ -1664,7 +1686,7 @@ const LoginShell = ({ go, onSignIn, context, error, contextLabel }) => (
             Visually secondary to the headline but anchored by a small bell icon. */}
         {context && (
           <div style={{
-            width: '100%', background: '#F8FAFC', borderRadius: 12,
+            width: '100%', background: C.surfaceAlt, borderRadius: R.xl,
             border: `1px solid ${C.border}`, padding: '12px 14px',
             marginBottom: 18,
             display: 'flex', alignItems: 'flex-start', gap: 10,
@@ -1755,7 +1777,7 @@ const LoginShell = ({ go, onSignIn, context, error, contextLabel }) => (
         </div>
 
         {/* Privacy-safe notification examples (internal) */}
-        <details style={{ width: '100%', borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 8 }}>
+        <details style={{ width: '100%', borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 8 }}>
           <summary style={{
             fontFamily: nunito, fontSize: 11, fontWeight: 700,
             color: '#60A5FA', background: '#0F172A',
@@ -1787,7 +1809,7 @@ const LoginShell = ({ go, onSignIn, context, error, contextLabel }) => (
           </div>
         </details>
 
-        <details style={{ width: '100%', borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 8 }}>
+        <details style={{ width: '100%', borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 8 }}>
           <summary style={{
             fontFamily: nunito, fontSize: 11, fontWeight: 700,
             color: '#60A5FA', background: '#0F172A',
@@ -1837,7 +1859,7 @@ const HelpTopicShell = ({ go, title, intro, sections, askNavigatorScreen, messag
       <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>{title}</span>
     </div>
 
-    <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+    <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
       <div style={{ padding: '14px 16px 0' }}>
         <div style={{ fontFamily: sfPro, fontSize: 13.5, color: C.textSecondary, lineHeight: 1.55, marginBottom: 14 }}>
           {intro}
@@ -2044,7 +2066,7 @@ const SCREENS = {
 
       {/* Past conversations section header */}
       <div style={{
-        padding: '11px 16px 9px', background: '#F9FAFB',
+        padding: '11px 16px 9px', background: C.navBubble,
         borderBottom: `1px solid ${C.border}`,
       }}>
         <span style={{
@@ -2357,7 +2379,7 @@ const SCREENS = {
             </svg>
           </div>
           <div style={{
-            flex: 1, background: '#F9FAFB', borderRadius: 12,
+            flex: 1, background: C.navBubble, borderRadius: R.xl,
             border: `1px solid ${C.border}`, padding: '10px 14px', minHeight: 44,
             display: 'flex', alignItems: 'center',
           }}>
@@ -2522,7 +2544,7 @@ const SCREENS = {
           </div>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', padding: '16px', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', padding: '16px', background: C.surfaceAlt }}>
           {/* Greeting */}
           <div style={{ marginBottom: 16 }}>
             <div style={{ fontFamily: nunito, fontSize: 22, fontWeight: 700, color: C.textPrimary, marginBottom: 3 }}>
@@ -2546,14 +2568,14 @@ const SCREENS = {
               </div>
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
-              <div onClick={() => go('benefits')} style={{ flex: 1, background: '#F8FAFC', borderRadius: 10, padding: '10px 12px', cursor: 'pointer' }}>
+              <div onClick={() => go('benefits')} style={{ flex: 1, background: C.surfaceAlt, borderRadius: R.lg, padding: '10px 12px', cursor: 'pointer' }}>
                 <div style={{ fontFamily: nunito, fontSize: 19, fontWeight: 700, color: C.textPrimary, lineHeight: 1.1 }}>$620</div>
                 <div style={{ fontFamily: sfPro, fontSize: 11, color: C.textSecondary, margin: '2px 0 6px' }}>of $1,500 deductible</div>
                 <div style={{ height: 4, background: C.border, borderRadius: 2 }}>
                   <div style={{ height: '100%', width: '41%', background: C.brand, borderRadius: 2 }}/>
                 </div>
               </div>
-              <div onClick={() => go('benefits')} style={{ flex: 1, background: '#F8FAFC', borderRadius: 10, padding: '10px 12px', cursor: 'pointer' }}>
+              <div onClick={() => go('benefits')} style={{ flex: 1, background: C.surfaceAlt, borderRadius: R.lg, padding: '10px 12px', cursor: 'pointer' }}>
                 <div style={{ fontFamily: nunito, fontSize: 19, fontWeight: 700, color: C.textPrimary, lineHeight: 1.1 }}>$1,240</div>
                 <div style={{ fontFamily: sfPro, fontSize: 11, color: C.textSecondary, margin: '2px 0 6px' }}>of $5,000 OOP max</div>
                 <div style={{ height: 4, background: C.border, borderRadius: 2 }}>
@@ -2656,7 +2678,7 @@ const SCREENS = {
                 </div>
               </div>
             </div>
-            <div style={{ borderRadius: 10, height: 40, border: `1.5px solid ${C.brand}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ borderRadius: R.lg, height: 40, border: `1.5px solid ${C.brand}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: C.brand }}>Start a conversation</span>
             </div>
           </div>
@@ -2782,7 +2804,7 @@ const SCREENS = {
           </div>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', padding: '16px', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', padding: '16px', background: C.surfaceAlt }}>
           {/* Greeting */}
           <div style={{ marginBottom: 16 }}>
             <div style={{ fontFamily: nunito, fontSize: 22, fontWeight: 700, color: C.textPrimary, marginBottom: 3 }}>
@@ -2806,14 +2828,14 @@ const SCREENS = {
               </div>
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
-              <div onClick={() => go('benefits')} style={{ flex: 1, background: '#F8FAFC', borderRadius: 10, padding: '10px 12px', cursor: 'pointer' }}>
+              <div onClick={() => go('benefits')} style={{ flex: 1, background: C.surfaceAlt, borderRadius: R.lg, padding: '10px 12px', cursor: 'pointer' }}>
                 <div style={{ fontFamily: nunito, fontSize: 19, fontWeight: 700, color: C.textPrimary, lineHeight: 1.1 }}>$620</div>
                 <div style={{ fontFamily: sfPro, fontSize: 11, color: C.textSecondary, margin: '2px 0 6px' }}>of $1,500 deductible</div>
                 <div style={{ height: 4, background: C.border, borderRadius: 2 }}>
                   <div style={{ height: '100%', width: '41%', background: C.brand, borderRadius: 2 }}/>
                 </div>
               </div>
-              <div onClick={() => go('benefits')} style={{ flex: 1, background: '#F8FAFC', borderRadius: 10, padding: '10px 12px', cursor: 'pointer' }}>
+              <div onClick={() => go('benefits')} style={{ flex: 1, background: C.surfaceAlt, borderRadius: R.lg, padding: '10px 12px', cursor: 'pointer' }}>
                 <div style={{ fontFamily: nunito, fontSize: 19, fontWeight: 700, color: C.textPrimary, lineHeight: 1.1 }}>$1,240</div>
                 <div style={{ fontFamily: sfPro, fontSize: 11, color: C.textSecondary, margin: '2px 0 6px' }}>of $5,000 OOP max</div>
                 <div style={{ height: 4, background: C.border, borderRadius: 2 }}>
@@ -2927,7 +2949,7 @@ const SCREENS = {
                 </div>
               </div>
             </div>
-            <div style={{ borderRadius: 10, height: 40, background: C.green, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ borderRadius: R.lg, height: 40, background: C.green, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: C.white }}>Open conversation</span>
             </div>
           </div>
@@ -3023,9 +3045,9 @@ const SCREENS = {
 
     const AccumulatorCard = ({ topic, title, met, max, pct, helper, hasAsk = true, valueOverride, totalOverride }) => (
       <div style={{
-        background: C.surface, borderRadius: 14, padding: '14px 16px 14px',
+        background: C.surface, borderRadius: R.xl, padding: '14px 16px 14px',
         border: `1px solid ${C.border}`, marginBottom: 10,
-        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+        boxShadow: SHADOW.xs,
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
           <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: C.textPrimary }}>{title}</span>
@@ -3081,7 +3103,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Benefits</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
           <div style={{ padding: '14px 16px 0' }}>
 
             {/* Plan summary card */}
@@ -3144,7 +3166,7 @@ const SCREENS = {
 
             {/* Data freshness note */}
             <div style={{
-              padding: '10px 12px', background: '#F1F5F9', borderRadius: 10,
+              padding: '10px 12px', background: C.navBubble, borderRadius: R.lg,
               border: `1px solid ${C.border}`, marginBottom: 14,
               display: 'flex', gap: 8, alignItems: 'flex-start',
             }}>
@@ -3176,8 +3198,8 @@ const SCREENS = {
                   </div>
                   <span style={{
                     fontFamily: nunito, fontSize: 13, fontWeight: 700, color: C.textPrimary,
-                    background: '#F1F5F9', border: '1px solid #E2E8F0',
-                    borderRadius: 6, padding: '3px 8px', whiteSpace: 'nowrap',
+                    background: C.navBubble, border: '1px solid #E2E8F0',
+                    borderRadius: R.sm, padding: '3px 8px', whiteSpace: 'nowrap',
                   }}>{c.cost}</span>
                 </div>
               ))}
@@ -3211,7 +3233,7 @@ const SCREENS = {
             <Annotation text="Accumulator values shown require a member-safe data path. Current get-accumulators is a care guide / AI tool, not a member RPC."/>
 
             {/* Internal data status — Benefits */}
-            <details style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
+            <details style={{ borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
               <summary style={{
                 fontFamily: nunito, fontSize: 11, fontWeight: 700,
                 color: '#60A5FA', background: '#0F172A',
@@ -3260,7 +3282,7 @@ const SCREENS = {
           <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: '#F1F5F9', border: '1px solid #CBD5E1',
+              background: C.navBubble, border: '1px solid #CBD5E1',
               borderRadius: 20, padding: '5px 12px',
             }}>
               <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
@@ -3297,7 +3319,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>{c.name}</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
           <div style={{ padding: '14px 16px 0' }}>
 
             {/* Summary card */}
@@ -3379,21 +3401,11 @@ const SCREENS = {
             <div style={{ height: 10 }}/>
 
             {/* Ask Navigator CTA */}
-            <div onClick={() => go('coverage-chat')} style={{
-              background: C.brandLight, borderRadius: 12, padding: '14px 16px',
-              border: `1px solid ${C.brandMid}`, cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14,
-            }}>
-              <MedefyMark size={26}/>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: C.brand, marginBottom: 2 }}>Ask Navigator about {c.name.toLowerCase()}</div>
-                <div style={{ fontFamily: sfPro, fontSize: 12, color: C.brand, opacity: 0.7 }}>Get help understanding how this applies to you →</div>
-              </div>
-            </div>
+            <AskNavCard title={`Ask Navigator about ${c.name.toLowerCase()}`} onClick={() => go('coverage-chat')} />
 
             <Annotation text="Coverage detail data may come from synced plan documents / KB summaries. Confirm source of truth and freshness."/>
 
-            <details style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
+            <details style={{ borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
               <summary style={{
                 fontFamily: nunito, fontSize: 11, fontWeight: 700,
                 color: '#60A5FA', background: '#0F172A',
@@ -3438,7 +3450,7 @@ const SCREENS = {
           <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: '#F1F5F9', border: '1px solid #CBD5E1',
+              background: C.navBubble, border: '1px solid #CBD5E1',
               borderRadius: 20, padding: '5px 12px',
             }}>
               <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
@@ -3472,7 +3484,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Benefits</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{ padding: '14px 16px 0' }}>
 
           {/* Plan summary skeleton */}
@@ -3518,7 +3530,7 @@ const SCREENS = {
                 borderBottom: i === 3 ? 'none' : `1px solid ${C.border}`,
               }}>
                 <div style={{ width: '50%', height: 12, borderRadius: 3, background: '#E2E8F0' }}/>
-                <div style={{ width: 50, height: 18, borderRadius: 6, background: '#EEF2F7' }}/>
+                <div style={{ width: 50, height: 18, borderRadius: R.sm, background: '#EEF2F7' }}/>
               </div>
             ))}
           </div>
@@ -3543,7 +3555,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Benefits</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{
           padding: '64px 32px 24px',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -3573,7 +3585,7 @@ const SCREENS = {
         <div style={{ padding: '0 16px' }}>
           <Annotation text="Accumulator / API failure should not block access to static plan details if those are available. Consider a partial-render fallback."/>
 
-          <details style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
+          <details style={{ borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
             <summary style={{
               fontFamily: nunito, fontSize: 11, fontWeight: 700,
               color: '#60A5FA', background: '#0F172A',
@@ -3622,7 +3634,7 @@ const SCREENS = {
 
           {/* Active notification context example */}
           <div style={{
-            width: '100%', background: '#F8FAFC', borderRadius: 14,
+            width: '100%', background: C.surfaceAlt, borderRadius: 14,
             border: `1px solid ${C.border}`, padding: '16px 18px',
             marginBottom: 22,
           }}>
@@ -3644,7 +3656,7 @@ const SCREENS = {
 
           {/* Backend annotation */}
           <div style={{
-            width: '100%', background: '#EFF6FF', borderRadius: 10,
+            width: '100%', background: '#EFF6FF', borderRadius: R.lg,
             border: '1px solid #BFDBFE', padding: '9px 12px',
             display: 'flex', gap: 7, marginBottom: 20,
           }}>
@@ -3676,7 +3688,7 @@ const SCREENS = {
           ].map((msg, i) => (
             <div key={i} style={{
               width: '100%', padding: '10px 14px', marginBottom: 7,
-              background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10,
+              background: C.surface, border: `1px solid ${C.border}`, borderRadius: R.lg,
             }}>
               <span style={{ fontFamily: sfPro, fontSize: 13, color: C.textSecondary }}>{msg}</span>
             </div>
@@ -3714,7 +3726,7 @@ const SCREENS = {
         <img src={LOGO_WORDMARK} style={{ height: 22, objectFit: 'contain' }} alt="Medefy" />
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', padding: '16px', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', padding: '16px', background: C.surfaceAlt }}>
         <div style={{
           fontFamily: nunito, fontSize: 16, fontWeight: 700,
           color: C.textPrimary, marginBottom: 12,
@@ -3808,10 +3820,10 @@ const SCREENS = {
 
         {/* ── Tab switcher ────────────────────────────────────────────── */}
         <div style={{ padding: '10px 16px', background: C.surface, borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
-          <div style={{ display: 'flex', background: '#F1F5F9', borderRadius: 10, padding: 3 }}>
+          <div style={{ display: 'flex', background: C.navBubble, borderRadius: R.lg, padding: 3 }}>
             {['medical', 'rx'].map(t => (
               <div key={t} onClick={() => setTab(t)} style={{
-                flex: 1, height: 34, borderRadius: 8, cursor: 'pointer',
+                flex: 1, height: 34, borderRadius: R.md, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: tab === t ? C.surface : 'transparent',
                 boxShadow: tab === t ? '0 1px 3px rgba(0,0,0,0.09)' : 'none',
@@ -3833,7 +3845,7 @@ const SCREENS = {
             MEDICAL TAB
         ══════════════════════════════════════════════════════════════ */}
         {tab === 'medical' ? (
-          <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+          <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
 
             <Annotation text="V1 uses a structured digital card. No front/back insurance card image exists in Texoma today. Card image storage is a new backend feature if product wants physical card scans."/>
 
@@ -3851,10 +3863,10 @@ const SCREENS = {
 
                 {/* Carrier placeholder + Medical badge */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-                  <div style={{ background: 'rgba(255,255,255,0.13)', borderRadius: 8, padding: '5px 10px' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.13)', borderRadius: R.md, padding: '5px 10px' }}>
                     <img src={LOGO_WORDMARK} style={{ height: 14, objectFit: 'contain', filter: 'brightness(0) invert(1)', opacity: 0.85, display: 'block' }} alt="Medefy"/>
                   </div>
-                  <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 6, padding: '3px 8px' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: R.sm, padding: '3px 8px' }}>
                     <span style={{ fontFamily: sfPro, fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.9)' }}>Medical</span>
                   </div>
                 </div>
@@ -3884,7 +3896,7 @@ const SCREENS = {
             </div>
 
             {/* ── Subscriber ID (below card, clean row) ──────────────── */}
-            <div style={{ margin: '12px 16px 0', background: C.surface, borderRadius: 12, border: `1px solid ${C.border}`, overflow: 'hidden' }}>
+            <div style={{ margin: '12px 16px 0', background: C.surface, borderRadius: R.xl, border: `1px solid ${C.border}`, overflow: 'hidden' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px' }}>
                 <span style={{ fontFamily: sfPro, fontSize: 13, color: C.textSecondary }}>Subscriber ID</span>
                 <span style={{ fontFamily: sfPro, fontSize: 13, fontWeight: 500, color: C.textPrimary }}>TXH-SUB-88731</span>
@@ -3896,7 +3908,7 @@ const SCREENS = {
               <div style={{ fontFamily: sfPro, fontSize: 11, fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
                 Copays (In-Network)
               </div>
-              <div style={{ background: C.surface, borderRadius: 12, border: `1px solid ${C.border}`, overflow: 'hidden' }}>
+              <div style={{ background: C.surface, borderRadius: R.xl, border: `1px solid ${C.border}`, overflow: 'hidden' }}>
                 {[
                   ['Primary care',     '$25'],
                   ['Specialist',       '$40'],
@@ -3925,7 +3937,7 @@ const SCREENS = {
               <div style={{ fontFamily: sfPro, fontSize: 11, fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
                 Important Contacts
               </div>
-              <div style={{ background: C.surface, borderRadius: 12, border: `1px solid ${C.border}`, overflow: 'hidden' }}>
+              <div style={{ background: C.surface, borderRadius: R.xl, border: `1px solid ${C.border}`, overflow: 'hidden' }}>
                 {[
                   ['Member Services',   '1-800-XXX-XXXX'],
                   ['Provider Services', '1-800-XXX-XXXX'],
@@ -3958,10 +3970,8 @@ const SCREENS = {
               <div style={{ flex: 1 }}>
                 <Btn label="Share card" size="lg" onClick={() => alert('Share card\n\n[Prototype only]\n\nProduct decision needed: native share sheet, PDF, image, or wallet pass. Requires backend work to compose the artifact.')} />
               </div>
-              <div
-                onClick={() => alert('Download PDF\n\n[Prototype only]\n\nProduct decision needed: generate PDF of structured card data. Requires backend work to compose the PDF artifact.')}
-                style={{ flex: 1, height: 44, borderRadius: 10, border: `1.5px solid ${C.brand}`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: C.brand }}>Download PDF</span>
+              <div style={{ flex: 1 }}>
+                <Btn label="Download PDF" hierarchy="secondary" size="lg" onClick={() => alert('Download PDF\n\n[Prototype only]\n\nProduct decision needed: generate PDF of structured card data. Requires backend work to compose the PDF artifact.')} />
               </div>
             </div>
             <div style={{ padding: '6px 16px 0' }}>
@@ -3972,21 +3982,11 @@ const SCREENS = {
 
             {/* ── Ask Navigator ─────────────────────────────────────── */}
             <div style={{ padding: '14px 16px' }}>
-              <div onClick={() => go('insurance-card-chat')} style={{
-                padding: '13px 16px', borderRadius: 12,
-                background: C.brandLight, border: `1px solid ${C.brandMid}`,
-                display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer',
-              }}>
-                <MedefyMark size={22}/>
-                <div style={{ flex: 1 }}>
-                  <span style={{ fontFamily: sfPro, fontSize: 14, fontWeight: 500, color: C.brand, display: 'block', marginBottom: 2 }}>Ask Navigator about this card</span>
-                  <span style={{ fontFamily: sfPro, fontSize: 12, color: C.brand, opacity: 0.7 }}>Get help with plan IDs, copays, or contacts →</span>
-                </div>
-              </div>
+              <AskNavCard title="Ask Navigator about this card" subtitle="Get help with plan IDs, copays, or contacts →" onClick={() => go('insurance-card-chat')} />
             </div>
 
             {/* ── Internal data status (collapsible — reviewer only) ─ */}
-            <details style={{ margin: '0 16px 20px', borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
+            <details style={{ margin: '0 16px 20px', borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
               <summary style={{
                 fontFamily: nunito, fontSize: 11, fontWeight: 700,
                 color: '#60A5FA', background: '#0F172A',
@@ -4051,7 +4051,7 @@ const SCREENS = {
         /* ══════════════════════════════════════════════════════════════
             RX / PHARMACY TAB — backend gap state
         ══════════════════════════════════════════════════════════════ */
-          <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+          <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
 
             {/* Member-facing gap state */}
             <div style={{
@@ -4062,13 +4062,13 @@ const SCREENS = {
               {/* Illustration */}
               <div style={{
                 width: 64, height: 64, borderRadius: 16, marginBottom: 18,
-                background: '#F1F5F9', border: '1px solid #CBD5E1',
+                background: C.navBubble, border: '1px solid #CBD5E1',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
-                  <rect x="4" y="2" width="18" height="26" rx="3" stroke="#94A3B8" strokeWidth="1.5" fill="#F8FAFC"/>
+                  <rect x="4" y="2" width="18" height="26" rx="3" stroke="#94A3B8" strokeWidth="1.5" fill={C.surfaceAlt}/>
                   <path d="M8 8h14M8 13h10M8 18h7" stroke="#94A3B8" strokeWidth="1.3" strokeLinecap="round"/>
-                  <circle cx="23" cy="23" r="6" fill="#F1F5F9" stroke="#CBD5E1" strokeWidth="1.2"/>
+                  <circle cx="23" cy="23" r="6" fill={C.navBubble} stroke="#CBD5E1" strokeWidth="1.2"/>
                   <path d="M20.5 23h5M23 20.5v5" stroke="#94A3B8" strokeWidth="1.3" strokeLinecap="round"/>
                 </svg>
               </div>
@@ -4080,7 +4080,7 @@ const SCREENS = {
               </div>
               <div onClick={() => go('insurance-card-chat')} style={{
                 background: C.brandLight, border: `1px solid ${C.brandMid}`,
-                borderRadius: 10, padding: '10px 18px', cursor: 'pointer',
+                borderRadius: R.lg, padding: '10px 18px', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8,
               }}>
                 <MedefyMark size={18}/>
@@ -4089,7 +4089,7 @@ const SCREENS = {
             </div>
 
             {/* Pharmacy benefit placeholder */}
-            <div style={{ margin: '12px 16px', padding: '14px 16px', background: C.surface, borderRadius: 12, border: `1px solid ${C.border}` }}>
+            <div style={{ margin: '12px 16px', padding: '14px 16px', background: C.surface, borderRadius: R.xl, border: `1px solid ${C.border}` }}>
               <div style={{ fontFamily: sfPro, fontSize: 13, fontWeight: 600, color: C.textSecondary, marginBottom: 5 }}>
                 Pharmacy benefit details
               </div>
@@ -4099,7 +4099,7 @@ const SCREENS = {
             </div>
 
             {/* Internal gap notes — collapsible */}
-            <details style={{ margin: '4px 16px 20px', borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
+            <details style={{ margin: '4px 16px 20px', borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
               <summary style={{
                 fontFamily: nunito, fontSize: 11, fontWeight: 700,
                 color: '#60A5FA', background: '#0F172A',
@@ -4139,12 +4139,12 @@ const SCREENS = {
         <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
-            background: '#F1F5F9', border: '1px solid #CBD5E1',
+            background: C.navBubble, border: '1px solid #CBD5E1',
             borderRadius: 20, padding: '5px 12px',
           }}>
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
               <rect x="1" y="0.5" width="8" height="11" rx="1.5" stroke="#64748B" strokeWidth="1.1"/>
-              <rect x="3" y="0.5" width="4" height="2" rx="0.75" stroke="#64748B" strokeWidth="1.1" fill="#F1F5F9"/>
+              <rect x="3" y="0.5" width="4" height="2" rx="0.75" stroke="#64748B" strokeWidth="1.1" fill={C.navBubble}/>
               <path d="M3 5h6M3 7h4" stroke="#64748B" strokeWidth="1" strokeLinecap="round"/>
             </svg>
             <span style={{ fontFamily: sfPro, fontSize: 12, fontWeight: 500, color: '#475569' }}>
@@ -4203,7 +4203,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Documents</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC', position: 'relative' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt, position: 'relative' }}>
           {/* Upload CTA */}
           <div style={{ padding: '14px 16px 4px' }}>
             <Btn label="Upload a document" onClick={startUpload} iconLeading={<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3v12M3 9h12" stroke="white" strokeWidth="1.8" strokeLinecap="round"/></svg>} />
@@ -4212,7 +4212,7 @@ const SCREENS = {
           {/* Search placeholder */}
           <div style={{ padding: '10px 16px 6px' }}>
             <div style={{
-              background: C.surface, borderRadius: 10, border: `1px solid ${C.border}`,
+              background: C.surface, borderRadius: R.lg, border: `1px solid ${C.border}`,
               padding: '9px 12px', display: 'flex', alignItems: 'center', gap: 8,
             }}>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -4264,7 +4264,7 @@ const SCREENS = {
           <Annotation text="Source labels stay member-friendly. Backend table/field names (chat_attachments, doc_source) are never exposed in the member UI."/>
 
           {/* Internal data status — Documents */}
-          <details style={{ margin: '10px 16px 20px', borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
+          <details style={{ margin: '10px 16px 20px', borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
             <summary style={{
               fontFamily: nunito, fontSize: 11, fontWeight: 700,
               color: '#60A5FA', background: '#0F172A',
@@ -4347,7 +4347,7 @@ const SCREENS = {
                     borderBottom: `1px solid ${C.border}`,
                   }}>
                     <div style={{
-                      width: 36, height: 36, borderRadius: 10,
+                      width: 36, height: 36, borderRadius: R.lg,
                       background: C.brandLight, display: 'flex',
                       alignItems: 'center', justifyContent: 'center',
                     }}>{opt.icon}</div>
@@ -4357,12 +4357,9 @@ const SCREENS = {
                     </div>
                   </div>
                 ))}
-                <div onClick={closeSheet} style={{
-                  margin: '12px 22px 0', padding: '11px',
-                  borderRadius: 10, background: '#F1F5F9',
-                  fontFamily: nunito, fontSize: 14, fontWeight: 700,
-                  color: C.textSecondary, textAlign: 'center', cursor: 'pointer',
-                }}>Cancel</div>
+                <div style={{ margin: '12px 22px 0' }}>
+                  <Btn label="Cancel" hierarchy="secondary" onClick={closeSheet} />
+                </div>
               </div>
             </div>
           )}
@@ -4392,7 +4389,7 @@ const SCREENS = {
           {uploadStage === 'success' && (
             <div style={{
               position: 'absolute', bottom: 16, left: 16, right: 16, zIndex: 11,
-              background: '#065F46', borderRadius: 10, padding: '12px 14px',
+              background: '#065F46', borderRadius: R.lg, padding: '12px 14px',
               display: 'flex', alignItems: 'center', gap: 10,
               animation: 'fadeSlideIn 0.25s ease-out',
               boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
@@ -4409,7 +4406,7 @@ const SCREENS = {
           {uploadStage === 'failed' && (
             <div style={{
               position: 'absolute', bottom: 16, left: 16, right: 16, zIndex: 11,
-              background: '#7F1D1D', borderRadius: 10, padding: '12px 14px',
+              background: '#7F1D1D', borderRadius: R.lg, padding: '12px 14px',
               display: 'flex', alignItems: 'center', gap: 10,
               animation: 'fadeSlideIn 0.25s ease-out',
               boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
@@ -4462,7 +4459,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 16, fontWeight: 700, color: C.textPrimary, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{doc.name}</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC', position: 'relative' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt, position: 'relative' }}>
           {/* Meta card */}
           <div style={{
             margin: '14px 16px 0', padding: '14px 16px',
@@ -4489,7 +4486,7 @@ const SCREENS = {
           }}>
             <div style={{
               width: '100%', minHeight: 260, background: C.surface,
-              borderRadius: 6, border: `1px solid ${C.border}`,
+              borderRadius: R.sm, border: `1px solid ${C.border}`,
               boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
               overflow: 'hidden',
               display: 'flex', flexDirection: 'column',
@@ -4576,13 +4573,13 @@ const SCREENS = {
           {doc.type === 'Benefits' && (
             <div style={{ padding: '14px 16px 0' }}>
               <div style={{
-                background: C.surface, borderRadius: 12, padding: '11px 14px',
+                background: C.surface, borderRadius: R.xl, padding: '11px 14px',
                 border: `1px solid ${C.border}`, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 11,
                 boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
               }} onClick={() => { setSelectedClaimId && setSelectedClaimId('claim-tmc'); go('claim-detail'); }}>
                 <div style={{
-                  width: 30, height: 30, borderRadius: 8, flexShrink: 0,
+                  width: 30, height: 30, borderRadius: R.md, flexShrink: 0,
                   background: C.brandLight, border: `1px solid ${C.brandMid}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
@@ -4633,23 +4630,13 @@ const SCREENS = {
 
           {/* Ask Navigator CTA */}
           <div style={{ padding: '8px 16px 14px' }}>
-            <div onClick={() => go('documents-chat')} style={{
-              background: C.brandLight, borderRadius: 12, padding: '14px 16px',
-              border: `1px solid ${C.brandMid}`, cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: 12,
-            }}>
-              <MedefyMark size={26}/>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: C.brand, marginBottom: 2 }}>Ask Navigator about this document</div>
-                <div style={{ fontFamily: sfPro, fontSize: 12, color: C.brand, opacity: 0.7 }}>Explain it, what you may owe, or what to ask your care guide →</div>
-              </div>
-            </div>
+            <AskNavCard title="Ask Navigator about this document" subtitle="Explain it, what you may owe, or what to ask your care guide →" onClick={() => go('documents-chat')} />
           </div>
 
           <Annotation text="View / Share / Download are prototype stubs — production requires a Supabase signed-URL flow."/>
 
           {/* Internal data status — Document Detail */}
-          <details style={{ margin: '10px 16px 20px', borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
+          <details style={{ margin: '10px 16px 20px', borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
             <summary style={{
               fontFamily: nunito, fontSize: 11, fontWeight: 700,
               color: '#60A5FA', background: '#0F172A',
@@ -4678,7 +4665,7 @@ const SCREENS = {
           {actionToast && (
             <div style={{
               position: 'absolute', bottom: 16, left: 16, right: 16, zIndex: 11,
-              background: '#0F172A', borderRadius: 10, padding: '11px 14px',
+              background: '#0F172A', borderRadius: R.lg, padding: '11px 14px',
               display: 'flex', alignItems: 'flex-start', gap: 10,
               animation: 'fadeSlideIn 0.22s ease-out',
               boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
@@ -4726,7 +4713,7 @@ const SCREENS = {
           <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: '#F1F5F9', border: '1px solid #CBD5E1',
+              background: C.navBubble, border: '1px solid #CBD5E1',
               borderRadius: 20, padding: '5px 12px', maxWidth: 320,
             }}>
               <svg width="11" height="13" viewBox="0 0 11 13" fill="none">
@@ -4761,7 +4748,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Documents</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC', display: 'flex', flexDirection: 'column' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt, display: 'flex', flexDirection: 'column' }}>
         <div style={{
           flex: 1, padding: '64px 32px', display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center', textAlign: 'center', gap: 14,
@@ -4850,7 +4837,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary }}>Profile</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC', position: 'relative' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt, position: 'relative' }}>
           {/* Member header card — name + role only, contact details live in Sign-in & security */}
           <div style={{
             margin: '14px 16px 0', padding: '16px',
@@ -4943,7 +4930,7 @@ const SCREENS = {
           <Annotation text="Member name, plan, and account IDs are placeholders. Live values come from Texoma profile sync + get_my_medefyweb_plan_info()."/>
 
           {/* Internal data status — Profile */}
-          <details style={{ margin: '10px 16px 20px', borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
+          <details style={{ margin: '10px 16px 20px', borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
             <summary style={{
               fontFamily: nunito, fontSize: 11, fontWeight: 700,
               color: '#60A5FA', background: '#0F172A',
@@ -4987,19 +4974,11 @@ const SCREENS = {
                   You&rsquo;ll need to sign in again to view your health and benefits information.
                 </div>
                 <div style={{ display: 'flex', gap: 10 }}>
-                  <div onClick={() => setSignOutModal(false)} style={{
-                    flex: 1, height: 44, borderRadius: 10,
-                    background: '#F1F5F9', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: C.textSecondary }}>Cancel</span>
+                  <div style={{ flex: 1 }}>
+                    <Btn label="Cancel" hierarchy="secondary" size="lg" onClick={() => setSignOutModal(false)} />
                   </div>
-                  <div onClick={confirmSignOut} style={{
-                    flex: 1, height: 44, borderRadius: 10,
-                    background: C.error, cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: 'white' }}>Sign out</span>
+                  <div style={{ flex: 1 }}>
+                    <Btn label="Sign out" hierarchy="destructive" size="lg" onClick={confirmSignOut} />
                   </div>
                 </div>
               </div>
@@ -5025,7 +5004,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Personal information</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         {[
           ['Name',           'Gunnar Morgan'],
           ['Date of birth',  'Mar 14, 1986'],
@@ -5046,7 +5025,7 @@ const SCREENS = {
         <div style={{ padding: 16 }}>
           <div style={{
             height: 46, borderRadius: 11, border: `1.5px solid ${C.border}`,
-            background: '#F1F5F9', cursor: 'not-allowed',
+            background: C.navBubble, cursor: 'not-allowed',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
           }}>
             <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: C.textMuted }}>Edit personal info</span>
@@ -5082,7 +5061,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Dependents</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
           <div style={{ padding: '12px 16px 6px' }}>
             <span style={{ fontFamily: sfPro, fontSize: 11, fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Covered dependents</span>
           </div>
@@ -5117,7 +5096,7 @@ const SCREENS = {
           <div style={{ padding: '16px' }}>
             <div style={{
               height: 46, borderRadius: 11, border: `1.5px dashed ${C.border}`,
-              background: '#F1F5F9', cursor: 'not-allowed',
+              background: C.navBubble, cursor: 'not-allowed',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             }}>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -5136,7 +5115,7 @@ const SCREENS = {
           <Annotation text="Dependent data source and member access rules need confirmation. Add / edit / remove dependent flows are out of scope for v1."/>
 
           {/* Internal panel */}
-          <details style={{ margin: '10px 16px 20px', borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
+          <details style={{ margin: '10px 16px 20px', borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
             <summary style={{
               fontFamily: nunito, fontSize: 11, fontWeight: 700,
               color: '#60A5FA', background: '#0F172A',
@@ -5249,7 +5228,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Notifications</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
           {/* Helper copy */}
           <div style={{ padding: '14px 16px 6px' }}>
             <div style={{ fontFamily: sfPro, fontSize: 13, color: C.textSecondary, lineHeight: 1.5 }}>
@@ -5289,7 +5268,7 @@ const SCREENS = {
             margin: '0 16px', borderRadius: 14, border: `1px solid ${C.border}`,
             background: C.surface, overflow: 'hidden',
           }}>
-            <div style={{ padding: '10px 14px', borderBottom: `1px solid ${C.border}`, background: '#F8FAFC' }}>
+            <div style={{ padding: '10px 14px', borderBottom: `1px solid ${C.border}`, background: C.surfaceAlt }}>
               <span style={{ fontFamily: sfPro, fontSize: 11, fontWeight: 600, color: C.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Private preview</span>
             </div>
             {[
@@ -5311,13 +5290,13 @@ const SCREENS = {
             margin: '0 16px', borderRadius: 14, border: `1px solid ${C.border}`,
             background: C.surface, overflow: 'hidden', opacity: previewMode === 'detailed' ? 1 : 0.55,
           }}>
-            <div style={{ padding: '10px 14px', borderBottom: `1px solid ${C.border}`, background: '#F8FAFC',
+            <div style={{ padding: '10px 14px', borderBottom: `1px solid ${C.border}`, background: C.surfaceAlt,
               display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ fontFamily: sfPro, fontSize: 11, fontWeight: 600, color: C.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Detailed preview</span>
               {previewMode !== 'detailed' && (
                 <span style={{
                   fontFamily: sfPro, fontSize: 10, fontWeight: 600,
-                  color: C.textMuted, background: '#F1F5F9',
+                  color: C.textMuted, background: C.navBubble,
                   border: `1px solid ${C.border}`,
                   borderRadius: 4, padding: '1px 6px',
                   textTransform: 'uppercase', letterSpacing: '0.06em',
@@ -5340,7 +5319,7 @@ const SCREENS = {
             <div onClick={() => go('os-notif-disabled')} style={{
               display: 'flex', alignItems: 'center', gap: 10,
               padding: '12px 14px', background: C.surface,
-              border: `1px solid ${C.border}`, borderRadius: 12, cursor: 'pointer',
+              border: `1px solid ${C.border}`, borderRadius: R.xl, cursor: 'pointer',
             }}>
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                 <path d="M9 1.5a5 5 0 015 5v3l1.5 2H2.5L4 9.5v-3a5 5 0 015-5z" stroke={C.brand} strokeWidth="1.4" fill={C.brandLight}/>
@@ -5359,7 +5338,7 @@ const SCREENS = {
           <Annotation text="Notification permissions also depend on OS-level notification settings. Open Settings deep link differs between iOS and Android."/>
 
           {/* Internal panel */}
-          <details style={{ margin: '10px 16px 20px', borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
+          <details style={{ margin: '10px 16px 20px', borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
             <summary style={{
               fontFamily: nunito, fontSize: 11, fontWeight: 700,
               color: '#60A5FA', background: '#0F172A',
@@ -5404,7 +5383,7 @@ const SCREENS = {
         borderBottom: `1px solid ${C.border}`, cursor: 'pointer',
       }}>
         <div style={{
-          width: 40, height: 40, borderRadius: 10, flexShrink: 0,
+          width: 40, height: 40, borderRadius: R.lg, flexShrink: 0,
           background: C.brandLight, border: `1px solid ${C.brandMid}`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>{icon}</div>
@@ -5428,7 +5407,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Contact Medefy</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC', position: 'relative' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt, position: 'relative' }}>
           <div style={{ padding: '14px 16px 6px' }}>
             <div style={{ fontFamily: sfPro, fontSize: 13, color: C.textSecondary, lineHeight: 1.5 }}>
               Get help from Navigator or a real person — whichever you need.
@@ -5467,7 +5446,7 @@ const SCREENS = {
           <Annotation text="Phone number and Help Center / FAQ destinations are placeholders. Phone-support action depends on configured support number — production values are per-plan constants pending Texoma confirmation."/>
 
           {/* Internal panel */}
-          <details style={{ margin: '10px 16px 20px', borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
+          <details style={{ margin: '10px 16px 20px', borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
             <summary style={{
               fontFamily: nunito, fontSize: 11, fontWeight: 700,
               color: '#60A5FA', background: '#0F172A',
@@ -5493,7 +5472,7 @@ const SCREENS = {
           {toast && (
             <div style={{
               position: 'absolute', bottom: 16, left: 16, right: 16, zIndex: 11,
-              background: '#0F172A', borderRadius: 10, padding: '11px 14px',
+              background: '#0F172A', borderRadius: R.lg, padding: '11px 14px',
               display: 'flex', alignItems: 'flex-start', gap: 10,
               animation: 'fadeSlideIn 0.22s ease-out',
               boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
@@ -5532,7 +5511,7 @@ const SCREENS = {
         <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            background: '#F1F5F9', border: '1px solid #CBD5E1',
+            background: C.navBubble, border: '1px solid #CBD5E1',
             borderRadius: 20, padding: '5px 12px',
           }}>
             <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
@@ -5590,7 +5569,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Help center</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
           <div style={{ padding: '14px 16px 6px' }}>
             <div style={{ fontFamily: sfPro, fontSize: 13, color: C.textSecondary, lineHeight: 1.5 }}>
               Find quick answers or contact Medefy for help.
@@ -5679,7 +5658,7 @@ const SCREENS = {
             <Annotation text="Help Center content is general education, not member-specific advice. Member-specific questions should route to authenticated Navigator or care guide flows."/>
           </div>
 
-          <details style={{ margin: '10px 16px 20px', borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
+          <details style={{ margin: '10px 16px 20px', borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
             <summary style={{
               fontFamily: nunito, fontSize: 11, fontWeight: 700,
               color: '#60A5FA', background: '#0F172A',
@@ -5721,7 +5700,7 @@ const SCREENS = {
         <div onClick={() => go('profile')} style={{ color: C.brand, fontSize: 26, lineHeight: 1, fontWeight: 300, cursor: 'pointer', paddingBottom: 2 }}>‹</div>
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Help center</span>
       </div>
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{ padding: '14px 16px 6px' }}>
           <div style={{ width: '70%', height: 10, borderRadius: 3, background: '#E2E8F0', marginBottom: 6 }}/>
           <div style={{ width: '45%', height: 9, borderRadius: 3, background: '#EEF2F7' }}/>
@@ -5764,7 +5743,7 @@ const SCREENS = {
         <div onClick={() => go('profile')} style={{ color: C.brand, fontSize: 26, lineHeight: 1, fontWeight: 300, cursor: 'pointer', paddingBottom: 2 }}>‹</div>
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Help center</span>
       </div>
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{ padding: '40px 28px 24px', textAlign: 'center' }}>
           <div style={{
             width: 56, height: 56, borderRadius: 16, margin: '0 auto 16px',
@@ -5885,7 +5864,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>FAQs</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
           <div style={{ padding: '14px 16px 6px' }}>
             <div style={{ fontFamily: sfPro, fontSize: 13, color: C.textSecondary, lineHeight: 1.5 }}>
               Quick answers to common questions about your plan and Medefy.
@@ -5897,7 +5876,7 @@ const SCREENS = {
               const isOpen = open === i;
               return (
                 <div key={i} style={{
-                  background: C.surface, borderRadius: 12,
+                  background: C.surface, borderRadius: R.xl,
                   border: `1px solid ${C.border}`, marginBottom: 8, overflow: 'hidden',
                 }}>
                   <div onClick={() => setOpen(isOpen ? -1 : i)} style={{
@@ -5941,7 +5920,7 @@ const SCREENS = {
         <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            background: '#F1F5F9', border: '1px solid #CBD5E1',
+            background: C.navBubble, border: '1px solid #CBD5E1',
             borderRadius: 20, padding: '5px 12px',
           }}>
             <span style={{ fontFamily: sfPro, fontSize: 12, fontWeight: 500, color: '#475569' }}>
@@ -5970,7 +5949,7 @@ const SCREENS = {
         <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            background: '#F1F5F9', border: '1px solid #CBD5E1',
+            background: C.navBubble, border: '1px solid #CBD5E1',
             borderRadius: 20, padding: '5px 12px',
           }}>
             <span style={{ fontFamily: sfPro, fontSize: 12, fontWeight: 500, color: '#475569' }}>
@@ -6000,7 +5979,7 @@ const SCREENS = {
         <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            background: '#F1F5F9', border: '1px solid #CBD5E1',
+            background: C.navBubble, border: '1px solid #CBD5E1',
             borderRadius: 20, padding: '5px 12px',
           }}>
             <span style={{ fontFamily: sfPro, fontSize: 12, fontWeight: 500, color: '#475569' }}>
@@ -6029,7 +6008,7 @@ const SCREENS = {
         <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            background: '#F1F5F9', border: '1px solid #CBD5E1',
+            background: C.navBubble, border: '1px solid #CBD5E1',
             borderRadius: 20, padding: '5px 12px',
           }}>
             <span style={{ fontFamily: sfPro, fontSize: 12, fontWeight: 500, color: '#475569' }}>
@@ -6061,7 +6040,7 @@ const SCREENS = {
         <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            background: '#F1F5F9', border: '1px solid #CBD5E1',
+            background: C.navBubble, border: '1px solid #CBD5E1',
             borderRadius: 20, padding: '5px 12px',
           }}>
             <span style={{ fontFamily: sfPro, fontSize: 12, fontWeight: 500, color: '#475569' }}>
@@ -6094,7 +6073,7 @@ const SCREENS = {
         <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            background: '#F1F5F9', border: '1px solid #CBD5E1',
+            background: C.navBubble, border: '1px solid #CBD5E1',
             borderRadius: 20, padding: '5px 12px',
           }}>
             <span style={{ fontFamily: sfPro, fontSize: 12, fontWeight: 500, color: '#475569' }}>
@@ -6146,7 +6125,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Help</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
           <div style={{ padding: '14px 16px 6px' }}>
             <div style={{ fontFamily: sfPro, fontSize: 13, color: C.textSecondary, lineHeight: 1.5 }}>
               Sign in to view help for benefits, claims, prescriptions, and your account.
@@ -6216,7 +6195,7 @@ const SCREENS = {
           <div style={{ width: 32 }}/>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
           <div style={{ padding: '22px 20px 8px' }}>
             <div style={{ fontFamily: nunito, fontSize: 22, fontWeight: 700, color: C.textPrimary, marginBottom: 4 }}>
               Texoma Mobile Prototype
@@ -6296,7 +6275,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Review app sections</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
           <div style={{ padding: '14px 16px 8px' }}>
             <div style={{ fontFamily: sfPro, fontSize: 13, color: C.textSecondary, lineHeight: 1.55 }}>
               Explore the main areas of the Texoma mobile prototype.
@@ -6356,7 +6335,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Prototype notes</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
           <div style={{ padding: '14px 16px 8px' }}>
             <div style={{ fontFamily: sfPro, fontSize: 12.5, color: C.textSecondary, lineHeight: 1.55 }}>
               Review-only — not linked from member-facing UI. Snapshot of known limitations and scope boundaries as of this build.
@@ -6478,7 +6457,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Terms and consent</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC', position: 'relative' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt, position: 'relative' }}>
           {/* Status card */}
           <div style={{
             margin: '14px 16px 0', padding: '14px 16px',
@@ -6508,7 +6487,7 @@ const SCREENS = {
           <Annotation text="Full terms acceptance flow exists separately as a pre-chat gate. This screen is a profile review surface only — no annual re-acceptance is triggered here."/>
 
           {/* Internal panel */}
-          <details style={{ margin: '10px 16px 20px', borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
+          <details style={{ margin: '10px 16px 20px', borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
             <summary style={{
               fontFamily: nunito, fontSize: 11, fontWeight: 700,
               color: '#60A5FA', background: '#0F172A',
@@ -6534,7 +6513,7 @@ const SCREENS = {
           {toast && (
             <div style={{
               position: 'absolute', bottom: 16, left: 16, right: 16, zIndex: 11,
-              background: '#0F172A', borderRadius: 10, padding: '11px 14px',
+              background: '#0F172A', borderRadius: R.lg, padding: '11px 14px',
               display: 'flex', alignItems: 'flex-start', gap: 10,
               animation: 'fadeSlideIn 0.22s ease-out',
               boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
@@ -6598,7 +6577,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Privacy</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC', position: 'relative' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt, position: 'relative' }}>
           <div style={{ padding: '14px 16px 6px' }}>
             <div style={{ fontFamily: sfPro, fontSize: 13, color: C.textSecondary, lineHeight: 1.5 }}>
               Your health and benefits information is only shown after you sign in.
@@ -6621,7 +6600,7 @@ const SCREENS = {
           <Annotation text="Medication names, claim details, and appointment details should not appear in lock-screen-visible notifications by default. Private previews are the default setting; Detailed previews require explicit approval."/>
 
           {/* Internal panel */}
-          <details style={{ margin: '10px 16px 20px', borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
+          <details style={{ margin: '10px 16px 20px', borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
             <summary style={{
               fontFamily: nunito, fontSize: 11, fontWeight: 700,
               color: '#60A5FA', background: '#0F172A',
@@ -6648,7 +6627,7 @@ const SCREENS = {
           {toast && (
             <div style={{
               position: 'absolute', bottom: 16, left: 16, right: 16, zIndex: 11,
-              background: '#0F172A', borderRadius: 10, padding: '11px 14px',
+              background: '#0F172A', borderRadius: R.lg, padding: '11px 14px',
               display: 'flex', alignItems: 'flex-start', gap: 10,
               animation: 'fadeSlideIn 0.22s ease-out',
               boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
@@ -6696,7 +6675,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Sign-in and security</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC', position: 'relative' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt, position: 'relative' }}>
 
           <div style={{ padding: '14px 16px 6px' }}>
             <span style={{ fontFamily: sfPro, fontSize: 11, fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Account</span>
@@ -6728,7 +6707,7 @@ const SCREENS = {
 
           <Annotation text="Password reset and biometric setup are out of scope for this prototype. Sign out clears the auth session and routes to a signed-out placeholder."/>
 
-          <details style={{ margin: '10px 16px 20px', borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
+          <details style={{ margin: '10px 16px 20px', borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
             <summary style={{
               fontFamily: nunito, fontSize: 11, fontWeight: 700,
               color: '#60A5FA', background: '#0F172A',
@@ -6769,19 +6748,11 @@ const SCREENS = {
                   You&rsquo;ll need to sign in again to view your health and benefits information.
                 </div>
                 <div style={{ display: 'flex', gap: 10 }}>
-                  <div onClick={() => setSignOutModal(false)} style={{
-                    flex: 1, height: 44, borderRadius: 10,
-                    background: '#F1F5F9', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: C.textSecondary }}>Cancel</span>
+                  <div style={{ flex: 1 }}>
+                    <Btn label="Cancel" hierarchy="secondary" size="lg" onClick={() => setSignOutModal(false)} />
                   </div>
-                  <div onClick={confirmSignOut} style={{
-                    flex: 1, height: 44, borderRadius: 10,
-                    background: C.error, cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: 'white' }}>Sign out</span>
+                  <div style={{ flex: 1 }}>
+                    <Btn label="Sign out" hierarchy="destructive" size="lg" onClick={confirmSignOut} />
                   </div>
                 </div>
               </div>
@@ -6808,7 +6779,7 @@ const SCREENS = {
           <div onClick={() => go('profile')} style={{ color: C.brand, fontSize: 26, lineHeight: 1, fontWeight: 300, cursor: 'pointer', paddingBottom: 2 }}>‹</div>
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Sign-in and security</span>
         </div>
-        <div style={{ flex: 1, position: 'relative', background: '#F8FAFC' }}>
+        <div style={{ flex: 1, position: 'relative', background: C.surfaceAlt }}>
           <div style={{ padding: '14px 16px' }}>
             <Annotation text="Review-only: this screen always opens the sign-out modal so reviewers can verify the confirmation design in isolation."/>
           </div>
@@ -6829,19 +6800,11 @@ const SCREENS = {
                   You&rsquo;ll need to sign in again to view your health and benefits information.
                 </div>
                 <div style={{ display: 'flex', gap: 10 }}>
-                  <div onClick={() => { setOpen(false); go('profile'); }} style={{
-                    flex: 1, height: 44, borderRadius: 10,
-                    background: '#F1F5F9', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: C.textSecondary }}>Cancel</span>
+                  <div style={{ flex: 1 }}>
+                    <Btn label="Cancel" hierarchy="secondary" size="lg" onClick={() => { setOpen(false); go('profile'); }} />
                   </div>
-                  <div onClick={() => { setOpen(false); signOut && signOut(); }} style={{
-                    flex: 1, height: 44, borderRadius: 10,
-                    background: C.error, cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: 'white' }}>Sign out</span>
+                  <div style={{ flex: 1 }}>
+                    <Btn label="Sign out" hierarchy="destructive" size="lg" onClick={() => { setOpen(false); signOut && signOut(); }} />
                   </div>
                 </div>
               </div>
@@ -7011,7 +6974,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Need help signing in?</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC', position: 'relative' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt, position: 'relative' }}>
           <div style={{ padding: '14px 16px 6px' }}>
             <span style={{ fontFamily: sfPro, fontSize: 11, fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Get help</span>
           </div>
@@ -7041,12 +7004,8 @@ const SCREENS = {
                   For your privacy, contact support for help finding your account.
                 </div>
                 <div style={{ display: 'flex', gap: 10 }}>
-                  <div onClick={() => setForgotEmailModal(false)} style={{
-                    flex: 1, height: 44, borderRadius: 10,
-                    background: '#F1F5F9', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: C.textSecondary }}>Cancel</span>
+                  <div style={{ flex: 1 }}>
+                    <Btn label="Cancel" hierarchy="secondary" size="lg" onClick={() => setForgotEmailModal(false)} />
                   </div>
                   <div style={{ flex: 1 }}>
                     <Btn label="Contact support" size="lg" onClick={() => { setForgotEmailModal(false); go('signed-out-support'); }} />
@@ -7074,7 +7033,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Contact support</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{ padding: '16px' }}>
           <div style={{
             background: C.surface, borderRadius: 14, padding: '18px 16px',
@@ -7103,7 +7062,7 @@ const SCREENS = {
 
           <Annotation text="Pre-auth support placeholder. Production should expose a phone number, help center URL, or signed-out support form sourced from MedefyWeb config — never an authenticated chat surface."/>
 
-          <details style={{ marginTop: 12, borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
+          <details style={{ marginTop: 12, borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
             <summary style={{
               fontFamily: nunito, fontSize: 11, fontWeight: 700,
               color: '#60A5FA', background: '#0F172A',
@@ -7175,7 +7134,7 @@ const SCREENS = {
 
           <Annotation text="We never confirm whether an email is registered. Server response is identical for known and unknown emails; only the eventual email delivery (or absence) tells the requester anything."/>
 
-          <details style={{ marginTop: 12, borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
+          <details style={{ marginTop: 12, borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
             <summary style={{
               fontFamily: nunito, fontSize: 11, fontWeight: 700,
               color: '#60A5FA', background: '#0F172A',
@@ -7326,13 +7285,8 @@ const SCREENS = {
           <div style={{ marginBottom: 10 }}>
             <Btn label="Enable notifications" onClick={() => go('home-default')} />
           </div>
-          <div onClick={() => go('home-default')} style={{
-            width: '100%', height: 46, borderRadius: 11, background: C.surface,
-            border: `1.5px solid ${C.border}`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', marginBottom: 18,
-          }}>
-            <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: C.textPrimary }}>Not now</span>
+          <div style={{ marginBottom: 18 }}>
+            <Btn label="Not now" hierarchy="secondary" onClick={() => go('home-default')} />
           </div>
 
           <div style={{ width: '100%' }}>
@@ -7377,13 +7331,8 @@ const SCREENS = {
           <div style={{ marginBottom: 10 }}>
             <Btn label="Enable Face ID" onClick={() => go('home-default')} />
           </div>
-          <div onClick={() => go('home-default')} style={{
-            width: '100%', height: 46, borderRadius: 11, background: C.surface,
-            border: `1.5px solid ${C.border}`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', marginBottom: 18,
-          }}>
-            <span style={{ fontFamily: nunito, fontSize: 14, fontWeight: 700, color: C.textPrimary }}>Not now</span>
+          <div style={{ marginBottom: 18 }}>
+            <Btn label="Not now" hierarchy="secondary" onClick={() => go('home-default')} />
           </div>
 
           <div style={{ width: '100%' }}>
@@ -7407,13 +7356,13 @@ const SCREENS = {
         <div onClick={() => go('profile')} style={{ color: C.brand, fontSize: 26, lineHeight: 1, fontWeight: 300, cursor: 'pointer', paddingBottom: 2 }}>‹</div>
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Notifications</span>
       </div>
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{ padding: '14px 16px 0' }}>
           <div style={{ width: '90%', height: 11, borderRadius: 3, background: '#E2E8F0', marginBottom: 14 }}/>
           {[0,1,2,3,4].map(i => (
             <div key={i} style={{
               padding: '14px 16px', background: C.surface, border: `1px solid ${C.border}`,
-              borderRadius: 10, marginBottom: 8,
+              borderRadius: R.lg, marginBottom: 8,
               display: 'flex', alignItems: 'center', gap: 14,
             }}>
               <div style={{ flex: 1 }}>
@@ -7441,7 +7390,7 @@ const SCREENS = {
         <div onClick={() => go('profile')} style={{ color: C.brand, fontSize: 26, lineHeight: 1, fontWeight: 300, cursor: 'pointer', paddingBottom: 2 }}>‹</div>
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Notifications</span>
       </div>
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{
           padding: '64px 32px 24px',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -7486,7 +7435,7 @@ const SCREENS = {
         <div onClick={() => go('notification-settings')} style={{ color: C.brand, fontSize: 26, lineHeight: 1, fontWeight: 300, cursor: 'pointer', paddingBottom: 2 }}>‹</div>
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Notifications</span>
       </div>
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{
           padding: '48px 32px 16px',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -7541,7 +7490,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Claims</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
           <div style={{ padding: '14px 16px 0' }}>
 
             {/* Helper copy */}
@@ -7626,7 +7575,7 @@ const SCREENS = {
 
             {/* Trust note */}
             <div style={{
-              padding: '10px 12px', background: '#F1F5F9', borderRadius: 10,
+              padding: '10px 12px', background: C.navBubble, borderRadius: R.lg,
               border: `1px solid ${C.border}`, marginTop: 6, marginBottom: 14,
               fontFamily: sfPro, fontSize: 12, color: C.textSecondary, lineHeight: 1.5,
             }}>
@@ -7636,7 +7585,7 @@ const SCREENS = {
             <Annotation text="Claims source of truth needs confirmation: existing claims-api, legacy member portal API, Texoma sync, or a future member-safe endpoint."/>
 
             {/* Internal data status — Claims list */}
-            <details style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
+            <details style={{ borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
               <summary style={{
                 fontFamily: nunito, fontSize: 11, fontWeight: 700,
                 color: '#60A5FA', background: '#0F172A',
@@ -7698,7 +7647,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 16, fontWeight: 700, color: C.textPrimary, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Claim detail</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
           <div style={{ padding: '14px 16px 0' }}>
 
             {/* Claim summary card */}
@@ -7736,7 +7685,7 @@ const SCREENS = {
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                     padding: '10px 16px',
                     borderTop: i === 0 ? 'none' : `1px solid ${C.border}`,
-                    background: emphasize ? '#F8FAFC' : 'transparent',
+                    background: emphasize ? C.surfaceAlt : 'transparent',
                   }}>
                     <span style={{ fontFamily: sfPro, fontSize: 13.5, color: emphasize ? C.textPrimary : C.textSecondary, fontWeight: emphasize ? 600 : 400 }}>{label}</span>
                     <span style={{ fontFamily: nunito, fontSize: emphasize ? 16 : 14, fontWeight: 700, color: C.textPrimary }}>{val}</span>
@@ -7863,7 +7812,7 @@ const SCREENS = {
 
             {/* Calm trust note — sits below cost/impact, before EOB + actions */}
             <div style={{
-              padding: '10px 12px', background: '#F1F5F9', borderRadius: 10,
+              padding: '10px 12px', background: C.navBubble, borderRadius: R.lg,
               border: `1px solid ${C.border}`, marginBottom: 10,
               display: 'flex', gap: 8, alignItems: 'flex-start',
             }}>
@@ -7905,23 +7854,11 @@ const SCREENS = {
             )}
 
             {/* Ask Navigator CTA */}
-            <div onClick={() => go('claim-chat')} style={{
-              background: C.brandLight, borderRadius: 14, padding: '14px 14px',
-              border: `1.5px solid ${C.brandMid}`, cursor: 'pointer', marginBottom: 8,
-              display: 'flex', alignItems: 'center', gap: 11,
-              boxShadow: '0 2px 6px rgba(45,141,253,0.08)',
-            }}>
-              <MedefyMark size={24}/>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: nunito, fontSize: 14.5, fontWeight: 700, color: C.brand, marginBottom: 2, lineHeight: 1.25 }}>Ask Navigator about this claim</div>
-                <div style={{ fontFamily: sfPro, fontSize: 12.5, color: C.brand, opacity: 0.75, lineHeight: 1.35 }}>Get help understanding what your plan paid</div>
-              </div>
-              <span style={{ fontFamily: sfPro, fontSize: 16, color: C.brand, fontWeight: 600, opacity: 0.85, flexShrink: 0, marginLeft: 2 }}>→</span>
-            </div>
+            <AskNavCard title="Ask Navigator about this claim" subtitle="Get help understanding what your plan paid" onClick={() => go('claim-chat')} />
 
             {/* Message Medefy CTA */}
             <div onClick={() => go('claim-help-chat')} style={{
-              background: C.surface, borderRadius: 12, padding: '13px 16px',
+              background: C.surface, borderRadius: R.xl, padding: '13px 16px',
               border: `1px solid ${C.border}`, cursor: 'pointer', marginBottom: 8,
               display: 'flex', alignItems: 'center', gap: 10,
             }}>
@@ -7939,7 +7876,7 @@ const SCREENS = {
 
             {/* View related benefits */}
             <div onClick={openCoverage} style={{
-              background: C.surface, borderRadius: 12, padding: '13px 16px',
+              background: C.surface, borderRadius: R.xl, padding: '13px 16px',
               border: `1px solid ${C.border}`, cursor: 'pointer', marginBottom: 12,
               display: 'flex', alignItems: 'center', gap: 10,
             }}>
@@ -7961,7 +7898,7 @@ const SCREENS = {
                 setMedicationBackTo && setMedicationBackTo('claim-detail');
                 go('medication-detail');
               }} style={{
-                background: C.surface, borderRadius: 12, padding: '13px 16px',
+                background: C.surface, borderRadius: R.xl, padding: '13px 16px',
                 border: `1px solid ${C.border}`, cursor: 'pointer', marginBottom: 12,
                 display: 'flex', alignItems: 'center', gap: 10,
               }}>
@@ -7980,7 +7917,7 @@ const SCREENS = {
 
             <Annotation text="Member-facing copy uses estimate framing ('You may owe', 'Estimated responsibility'). Internal cost labels (billed / allowed / plan paid / member responsibility) need final confirmation per claim type."/>
 
-            <details style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
+            <details style={{ borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
               <summary style={{
                 fontFamily: nunito, fontSize: 11, fontWeight: 700,
                 color: '#60A5FA', background: '#0F172A',
@@ -8033,7 +7970,7 @@ const SCREENS = {
           <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: '#F1F5F9', border: '1px solid #CBD5E1',
+              background: C.navBubble, border: '1px solid #CBD5E1',
               borderRadius: 20, padding: '5px 12px', maxWidth: 320,
             }}>
               <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
@@ -8067,7 +8004,7 @@ const SCREENS = {
           <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: '#F1F5F9', border: '1px solid #CBD5E1',
+              background: C.navBubble, border: '1px solid #CBD5E1',
               borderRadius: 20, padding: '5px 12px',
             }}>
               <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
@@ -8107,7 +8044,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Claims</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{ padding: '14px 16px 0' }}>
           {/* Helper copy + search skeleton */}
           <div style={{ width: '85%', height: 11, borderRadius: 3, background: '#E2E8F0', marginBottom: 14 }}/>
@@ -8153,7 +8090,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Claims</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{
           padding: '64px 32px 24px',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -8205,7 +8142,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Claims</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{
           padding: '64px 32px 24px',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -8235,7 +8172,7 @@ const SCREENS = {
         <div style={{ padding: '0 16px' }}>
           <Annotation text="Distinguish auth failure, network failure, and upstream claims-api timeout. Different copy + remediation per case."/>
 
-          <details style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
+          <details style={{ borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
             <summary style={{
               fontFamily: nunito, fontSize: 11, fontWeight: 700,
               color: '#60A5FA', background: '#0F172A',
@@ -8281,7 +8218,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Rx</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
           <div style={{ padding: '14px 16px 0' }}>
 
             {/* Helper copy */}
@@ -8362,7 +8299,7 @@ const SCREENS = {
 
             {/* Calm note */}
             <div style={{
-              padding: '10px 12px', background: '#F1F5F9', borderRadius: 10,
+              padding: '10px 12px', background: C.navBubble, borderRadius: R.lg,
               border: `1px solid ${C.border}`, marginTop: 4, marginBottom: 14,
               display: 'flex', gap: 8, alignItems: 'flex-start',
             }}>
@@ -8380,7 +8317,7 @@ const SCREENS = {
             <Annotation text="Rx data source needs confirmation: drugs-api, PBM, pharmacy claims, legacy API, or Texoma sync."/>
 
             {/* Internal data status — Rx landing */}
-            <details style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
+            <details style={{ borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
               <summary style={{
                 fontFamily: nunito, fontSize: 11, fontWeight: 700,
                 color: '#60A5FA', background: '#0F172A',
@@ -8432,7 +8369,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Search</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
 
           {/* Active query chip */}
           <div style={{ padding: '12px 16px 4px', display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -8502,7 +8439,7 @@ const SCREENS = {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexWrap: 'wrap', marginBottom: 6 }}>
                       <span style={{
                         fontFamily: sfPro, fontSize: 11, fontWeight: 500,
-                        color: '#475569', background: '#F1F5F9',
+                        color: '#475569', background: C.navBubble,
                         border: '1px solid #E2E8F0',
                         borderRadius: 4, padding: '1px 7px',
                       }}>{m.brandType}</span>
@@ -8521,14 +8458,14 @@ const SCREENS = {
           {/* Calm note */}
           <div style={{
             margin: '6px 16px 14px', padding: '10px 12px',
-            background: '#F1F5F9', borderRadius: 10, border: `1px solid ${C.border}`,
+            background: C.navBubble, borderRadius: R.lg, border: `1px solid ${C.border}`,
             fontFamily: sfPro, fontSize: 12, color: C.textSecondary, lineHeight: 1.55,
           }}>
             Estimated costs can vary by pharmacy. Confirm with the pharmacy before filling.
           </div>
 
           {/* Internal panel */}
-          <details style={{ margin: '6px 16px 22px', borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
+          <details style={{ margin: '6px 16px 22px', borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
             <summary style={{
               fontFamily: nunito, fontSize: 11, fontWeight: 700,
               color: '#60A5FA', background: '#0F172A',
@@ -8580,7 +8517,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 16, fontWeight: 700, color: C.textPrimary, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Medication detail</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
           <div style={{ padding: '14px 16px 0' }}>
 
             {/* Summary card */}
@@ -8597,7 +8534,7 @@ const SCREENS = {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexWrap: 'wrap' }}>
                   <span style={{
                     fontFamily: sfPro, fontSize: 11, fontWeight: 500,
-                    color: '#475569', background: '#F1F5F9',
+                    color: '#475569', background: C.navBubble,
                     border: '1px solid #E2E8F0',
                     borderRadius: 4, padding: '1px 7px',
                   }}>{m.brandType}</span>
@@ -8719,7 +8656,7 @@ const SCREENS = {
 
             {/* Calm safety note */}
             <div style={{
-              padding: '10px 12px', background: '#F1F5F9', borderRadius: 10,
+              padding: '10px 12px', background: C.navBubble, borderRadius: R.lg,
               border: `1px solid ${C.border}`, marginBottom: 10,
               display: 'flex', gap: 8, alignItems: 'flex-start',
             }}>
@@ -8733,28 +8670,16 @@ const SCREENS = {
             </div>
 
             {/* Ask Navigator CTA — PA-aware label + route */}
-            <div onClick={() => go(m.coverage === 'prior-auth' ? 'rx-pa-chat' : 'rx-chat')} style={{
-              background: C.brandLight, borderRadius: 14, padding: '14px 14px',
-              border: `1.5px solid ${C.brandMid}`, cursor: 'pointer', marginBottom: 8,
-              display: 'flex', alignItems: 'center', gap: 11,
-              boxShadow: '0 2px 6px rgba(45,141,253,0.08)',
-            }}>
-              <MedefyMark size={24}/>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: nunito, fontSize: 14.5, fontWeight: 700, color: C.brand, marginBottom: 2, lineHeight: 1.25 }}>
-                  {m.coverage === 'prior-auth' ? 'Ask Navigator about prior authorization' : 'Ask Navigator about this medication'}
-                </div>
-                <div style={{ fontFamily: sfPro, fontSize: 12.5, color: C.brand, opacity: 0.75, lineHeight: 1.35 }}>
-                  {m.coverage === 'prior-auth' ? 'Explain what prior authorization usually means' : 'Get help with coverage, cost, or alternatives'}
-                </div>
-              </div>
-              <span style={{ fontFamily: sfPro, fontSize: 16, color: C.brand, fontWeight: 600, opacity: 0.85, flexShrink: 0, marginLeft: 2 }}>→</span>
-            </div>
+            <AskNavCard
+              title={m.coverage === 'prior-auth' ? 'Ask Navigator about prior authorization' : 'Ask Navigator about this medication'}
+              subtitle={m.coverage === 'prior-auth' ? 'Explain what prior authorization usually means' : 'Get help with coverage, cost, or alternatives'}
+              onClick={() => go(m.coverage === 'prior-auth' ? 'rx-pa-chat' : 'rx-chat')}
+            />
 
             {/* Message Medefy — only for prior-auth meds */}
             {m.coverage === 'prior-auth' && (
               <div onClick={() => go('rx-help-chat')} style={{
-                background: C.surface, borderRadius: 12, padding: '13px 16px',
+                background: C.surface, borderRadius: R.xl, padding: '13px 16px',
                 border: `1px solid ${C.border}`, cursor: 'pointer', marginBottom: 8,
                 display: 'flex', alignItems: 'center', gap: 10,
               }}>
@@ -8773,7 +8698,7 @@ const SCREENS = {
 
             {/* Find pharmacies CTA */}
             <div onClick={() => go('pharmacy-results')} style={{
-              background: C.surface, borderRadius: 12, padding: '13px 16px',
+              background: C.surface, borderRadius: R.xl, padding: '13px 16px',
               border: `1px solid ${C.border}`, cursor: 'pointer', marginBottom: 8,
               display: 'flex', alignItems: 'center', gap: 10,
             }}>
@@ -8791,7 +8716,7 @@ const SCREENS = {
             {/* View related claim — only when a claim is linked */}
             {m.claimId && (
               <div onClick={openClaim} style={{
-                background: C.surface, borderRadius: 12, padding: '13px 16px',
+                background: C.surface, borderRadius: R.xl, padding: '13px 16px',
                 border: `1px solid ${C.border}`, cursor: 'pointer', marginBottom: 12,
                 display: 'flex', alignItems: 'center', gap: 10,
               }}>
@@ -8810,7 +8735,7 @@ const SCREENS = {
             <Annotation text="Medication names should not appear in push notification previews, lock-screen-visible content, or unauthenticated surfaces. Use generic copy such as 'Prescription update' or 'Open the app to view details.' Inside authenticated Rx screens and chat context chips, medication names can remain visible."/>
             <Annotation text="Medication education and clinical guidance require clinical review and are out of scope for this prototype."/>
 
-            <details style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
+            <details style={{ borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
               <summary style={{
                 fontFamily: nunito, fontSize: 11, fontWeight: 700,
                 color: '#60A5FA', background: '#0F172A',
@@ -8863,7 +8788,7 @@ const SCREENS = {
           <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: '#F1F5F9', border: '1px solid #CBD5E1',
+              background: C.navBubble, border: '1px solid #CBD5E1',
               borderRadius: 20, padding: '5px 12px', maxWidth: 320,
             }}>
               <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
@@ -8897,7 +8822,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Pharmacies</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{ padding: '12px 16px 4px', display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontFamily: sfPro, fontSize: 12, color: C.textMuted }}>Near Boise, ID</span>
           <span style={{ flex: 1 }}/>
@@ -8925,7 +8850,7 @@ const SCREENS = {
                       <NetworkBadge network={p.network}/>
                       <span style={{
                         fontFamily: sfPro, fontSize: 11, color: C.textSecondary,
-                        background: '#F1F5F9', border: '1px solid #E2E8F0',
+                        background: C.navBubble, border: '1px solid #E2E8F0',
                         borderRadius: 4, padding: '2px 7px',
                       }}>Pharmacy</span>
                     </div>
@@ -8944,7 +8869,7 @@ const SCREENS = {
 
         <div style={{
           margin: '6px 16px 14px', padding: '10px 12px',
-          background: '#F1F5F9', borderRadius: 10, border: `1px solid ${C.border}`,
+          background: C.navBubble, borderRadius: R.lg, border: `1px solid ${C.border}`,
           fontFamily: sfPro, fontSize: 12, color: C.textSecondary, lineHeight: 1.55,
         }}>
           Network status and costs can change. Confirm with the pharmacy before filling.
@@ -8954,7 +8879,7 @@ const SCREENS = {
           <Annotation text="Pharmacy network/search source may differ from Candor provider search. Confirm drugs-api / PBM / pharmacy network source."/>
         </div>
 
-        <details style={{ margin: '10px 16px 22px', borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
+        <details style={{ margin: '10px 16px 22px', borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
           <summary style={{
             fontFamily: nunito, fontSize: 11, fontWeight: 700,
             color: '#60A5FA', background: '#0F172A',
@@ -8994,7 +8919,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Rx</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{ padding: '14px 16px 0' }}>
           <div style={{ width: '85%', height: 11, borderRadius: 3, background: '#E2E8F0', marginBottom: 14 }}/>
           <div style={{ height: 48, borderRadius: 14, background: C.surface, border: `1px solid ${C.border}`, marginBottom: 12 }}/>
@@ -9010,7 +8935,7 @@ const SCREENS = {
               border: `1px solid ${C.border}`, marginBottom: 10,
               display: 'flex', gap: 12, alignItems: 'flex-start',
             }}>
-              <div style={{ width: 40, height: 40, borderRadius: 10, background: '#EEF2F7', border: `1px solid ${C.border}`, flexShrink: 0 }}/>
+              <div style={{ width: 40, height: 40, borderRadius: R.lg, background: '#EEF2F7', border: `1px solid ${C.border}`, flexShrink: 0 }}/>
               <div style={{ flex: 1 }}>
                 <div style={{ width: '60%', height: 13, borderRadius: 3, background: '#CBD5E1', marginBottom: 7, animation: i === 0 ? 'dotPulse 1.4s ease-in-out infinite' : 'none' }}/>
                 <div style={{ width: '45%', height: 9, borderRadius: 3, background: '#E2E8F0', marginBottom: 9 }}/>
@@ -9040,7 +8965,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Rx</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{
           padding: '64px 32px 24px',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -9093,7 +9018,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Rx</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{
           padding: '64px 32px 24px',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -9140,7 +9065,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Search</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{
           padding: '56px 32px 24px',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -9217,7 +9142,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>May need attention</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
           <div style={{ padding: '14px 16px 0' }}>
 
             <div style={{ fontFamily: sfPro, fontSize: 13.5, color: C.textSecondary, lineHeight: 1.55, marginBottom: 14 }}>
@@ -9271,7 +9196,7 @@ const SCREENS = {
                             <RxIcon size={40}/>
                           ) : (
                             <div style={{
-                              width: 40, height: 40, borderRadius: 10, flexShrink: 0,
+                              width: 40, height: 40, borderRadius: R.lg, flexShrink: 0,
                               background: C.amberLight, border: `1px solid ${C.amberBorder}`,
                               display: 'flex', alignItems: 'center', justifyContent: 'center',
                             }}>
@@ -9307,7 +9232,7 @@ const SCREENS = {
             {/* Calm note — only when items are present */}
             {items.length > 0 && (
               <div style={{
-                padding: '10px 12px', background: '#F1F5F9', borderRadius: 10,
+                padding: '10px 12px', background: C.navBubble, borderRadius: R.lg,
                 border: `1px solid ${C.border}`, marginTop: 4, marginBottom: 14,
                 display: 'flex', gap: 8, alignItems: 'flex-start',
               }}>
@@ -9325,7 +9250,7 @@ const SCREENS = {
             <Annotation text="Needs attention aggregation requires backend rules across Rx, Claims, Benefits, and Provider data."/>
             <Annotation text="Needs attention notifications must use generic copy ('An item may need your attention', 'Open the app to review details'). Never expose medication names or claim details on lock-screen-visible surfaces."/>
 
-            <details style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
+            <details style={{ borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
               <summary style={{
                 fontFamily: nunito, fontSize: 11, fontWeight: 700,
                 color: '#60A5FA', background: '#0F172A',
@@ -9378,7 +9303,7 @@ const SCREENS = {
           <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: '#F1F5F9', border: '1px solid #CBD5E1',
+              background: C.navBubble, border: '1px solid #CBD5E1',
               borderRadius: 20, padding: '5px 12px', maxWidth: 320,
             }}>
               <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
@@ -9412,7 +9337,7 @@ const SCREENS = {
           <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: '#F1F5F9', border: '1px solid #CBD5E1',
+              background: C.navBubble, border: '1px solid #CBD5E1',
               borderRadius: 20, padding: '5px 12px',
             }}>
               <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
@@ -9545,7 +9470,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Appointments</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
           <div style={{ padding: '14px 16px 0' }}>
 
             <div style={{ fontFamily: sfPro, fontSize: 13.5, color: C.textSecondary, lineHeight: 1.55, marginBottom: 14 }}>
@@ -9671,7 +9596,7 @@ const SCREENS = {
 
             {/* Calm note */}
             <div style={{
-              padding: '10px 12px', background: '#F1F5F9', borderRadius: 10,
+              padding: '10px 12px', background: C.navBubble, borderRadius: R.lg,
               border: `1px solid ${C.border}`, marginTop: 4, marginBottom: 14,
               display: 'flex', gap: 8, alignItems: 'flex-start',
             }}>
@@ -9688,7 +9613,7 @@ const SCREENS = {
             <Annotation text="Appointment details should not appear in lock-screen-visible notifications unless privacy rules allow it. Use generic copy such as 'Appointment update' or 'Open the app to view details.'"/>
             <Annotation text="Tab switching here is a state-driven prototype. Production tab data depends on appointment + care-task backend feeds."/>
 
-            <details style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
+            <details style={{ borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
               <summary style={{
                 fontFamily: nunito, fontSize: 11, fontWeight: 700,
                 color: '#60A5FA', background: '#0F172A',
@@ -9745,7 +9670,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 16, fontWeight: 700, color: C.textPrimary, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Appointment detail</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
           <div style={{ padding: '14px 16px 0' }}>
 
             {/* Summary card */}
@@ -9835,23 +9760,11 @@ const SCREENS = {
             </div>
 
             {/* Ask Navigator CTA */}
-            <div onClick={() => go('appointment-chat')} style={{
-              background: C.brandLight, borderRadius: 14, padding: '14px 14px',
-              border: `1.5px solid ${C.brandMid}`, cursor: 'pointer', marginBottom: 8,
-              display: 'flex', alignItems: 'center', gap: 11,
-              boxShadow: '0 2px 6px rgba(45,141,253,0.08)',
-            }}>
-              <MedefyMark size={24}/>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: nunito, fontSize: 14.5, fontWeight: 700, color: C.brand, marginBottom: 2, lineHeight: 1.25 }}>Ask Navigator about this appointment</div>
-                <div style={{ fontFamily: sfPro, fontSize: 12.5, color: C.brand, opacity: 0.75, lineHeight: 1.35 }}>Get help with cost, coverage, or what to expect</div>
-              </div>
-              <span style={{ fontFamily: sfPro, fontSize: 16, color: C.brand, fontWeight: 600, opacity: 0.85, flexShrink: 0, marginLeft: 2 }}>→</span>
-            </div>
+            <AskNavCard title="Ask Navigator about this appointment" subtitle="Get help with cost, coverage, or what to expect" onClick={() => go('appointment-chat')} />
 
             {/* Message Medefy */}
             <div onClick={() => go('appointment-help-chat')} style={{
-              background: C.surface, borderRadius: 12, padding: '13px 16px',
+              background: C.surface, borderRadius: R.xl, padding: '13px 16px',
               border: `1px solid ${C.border}`, cursor: 'pointer', marginBottom: 8,
               display: 'flex', alignItems: 'center', gap: 10,
             }}>
@@ -9869,7 +9782,7 @@ const SCREENS = {
 
             {/* View related provider */}
             <div onClick={openProvider} style={{
-              background: C.surface, borderRadius: 12, padding: '13px 16px',
+              background: C.surface, borderRadius: R.xl, padding: '13px 16px',
               border: `1px solid ${C.border}`, cursor: 'pointer', marginBottom: 8,
               display: 'flex', alignItems: 'center', gap: 10,
             }}>
@@ -9886,7 +9799,7 @@ const SCREENS = {
 
             {/* View related benefits */}
             <div onClick={openCoverage} style={{
-              background: C.surface, borderRadius: 12, padding: '13px 16px',
+              background: C.surface, borderRadius: R.xl, padding: '13px 16px',
               border: `1px solid ${C.border}`, cursor: 'pointer', marginBottom: 12,
               display: 'flex', alignItems: 'center', gap: 10,
             }}>
@@ -9904,7 +9817,7 @@ const SCREENS = {
             <Annotation text="Care guides can help explain coverage, cost, and what to ask, but scheduling/rescheduling is out of scope unless supported by future integrations."/>
             <Annotation text="Appointment details should not appear in lock-screen-visible notifications unless privacy rules allow it. Use generic copy such as 'Appointment update' or 'Open the app to view details.'"/>
 
-            <details style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
+            <details style={{ borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
               <summary style={{
                 fontFamily: nunito, fontSize: 11, fontWeight: 700,
                 color: '#60A5FA', background: '#0F172A',
@@ -9950,7 +9863,7 @@ const SCREENS = {
           <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: '#F1F5F9', border: '1px solid #CBD5E1',
+              background: C.navBubble, border: '1px solid #CBD5E1',
               borderRadius: 20, padding: '5px 12px', maxWidth: 320,
             }}>
               <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
@@ -9985,7 +9898,7 @@ const SCREENS = {
           <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: '#F1F5F9', border: '1px solid #CBD5E1',
+              background: C.navBubble, border: '1px solid #CBD5E1',
               borderRadius: 20, padding: '5px 12px',
             }}>
               <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
@@ -10032,7 +9945,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 16, fontWeight: 700, color: C.textPrimary, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Care task</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
           <div style={{ padding: '14px 16px 0' }}>
 
             {/* Summary card */}
@@ -10075,23 +9988,11 @@ const SCREENS = {
             </div>
 
             {/* Ask Navigator CTA */}
-            <div onClick={() => go('care-task-chat')} style={{
-              background: C.brandLight, borderRadius: 14, padding: '14px 14px',
-              border: `1.5px solid ${C.brandMid}`, cursor: 'pointer', marginBottom: 8,
-              display: 'flex', alignItems: 'center', gap: 11,
-              boxShadow: '0 2px 6px rgba(45,141,253,0.08)',
-            }}>
-              <MedefyMark size={24}/>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: nunito, fontSize: 14.5, fontWeight: 700, color: C.brand, marginBottom: 2, lineHeight: 1.25 }}>Ask Navigator about this task</div>
-                <div style={{ fontFamily: sfPro, fontSize: 12.5, color: C.brand, opacity: 0.75, lineHeight: 1.35 }}>Explain what pre-authorization usually means</div>
-              </div>
-              <span style={{ fontFamily: sfPro, fontSize: 16, color: C.brand, fontWeight: 600, opacity: 0.85, flexShrink: 0, marginLeft: 2 }}>→</span>
-            </div>
+            <AskNavCard title="Ask Navigator about this task" subtitle="Explain what pre-authorization usually means" onClick={() => go('care-task-chat')} />
 
             {/* Message Medefy */}
             <div onClick={() => go('care-task-help-chat')} style={{
-              background: C.surface, borderRadius: 12, padding: '13px 16px',
+              background: C.surface, borderRadius: R.xl, padding: '13px 16px',
               border: `1px solid ${C.border}`, cursor: 'pointer', marginBottom: 8,
               display: 'flex', alignItems: 'center', gap: 10,
             }}>
@@ -10109,7 +10010,7 @@ const SCREENS = {
 
             {/* View related benefits */}
             <div onClick={openCoverage} style={{
-              background: C.surface, borderRadius: 12, padding: '13px 16px',
+              background: C.surface, borderRadius: R.xl, padding: '13px 16px',
               border: `1px solid ${C.border}`, cursor: 'pointer', marginBottom: 12,
               display: 'flex', alignItems: 'center', gap: 10,
             }}>
@@ -10126,7 +10027,7 @@ const SCREENS = {
 
             <Annotation text="Pre-authorization task rules need backend definition. Submission of clinical documentation, scheduling imaging, appeals, and payment are out of scope."/>
 
-            <details style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
+            <details style={{ borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
               <summary style={{
                 fontFamily: nunito, fontSize: 11, fontWeight: 700,
                 color: '#60A5FA', background: '#0F172A',
@@ -10167,7 +10068,7 @@ const SCREENS = {
           <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: '#F1F5F9', border: '1px solid #CBD5E1',
+              background: C.navBubble, border: '1px solid #CBD5E1',
               borderRadius: 20, padding: '5px 12px',
             }}>
               <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
@@ -10201,7 +10102,7 @@ const SCREENS = {
           <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: '#F1F5F9', border: '1px solid #CBD5E1',
+              background: C.navBubble, border: '1px solid #CBD5E1',
               borderRadius: 20, padding: '5px 12px',
             }}>
               <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
@@ -10241,7 +10142,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Appointments</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{ padding: '14px 16px 0' }}>
           <div style={{ width: '85%', height: 11, borderRadius: 3, background: '#E2E8F0', marginBottom: 14 }}/>
           <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
@@ -10256,7 +10157,7 @@ const SCREENS = {
               border: `1px solid ${C.border}`, marginBottom: 10,
               display: 'flex', gap: 12, alignItems: 'flex-start',
             }}>
-              <div style={{ width: 44, height: 44, borderRadius: 10, background: '#EEF2F7', border: `1px solid ${C.border}`, flexShrink: 0 }}/>
+              <div style={{ width: 44, height: 44, borderRadius: R.lg, background: '#EEF2F7', border: `1px solid ${C.border}`, flexShrink: 0 }}/>
               <div style={{ flex: 1 }}>
                 <div style={{ width: '60%', height: 13, borderRadius: 3, background: '#CBD5E1', marginBottom: 7, animation: i === 0 ? 'dotPulse 1.4s ease-in-out infinite' : 'none' }}/>
                 <div style={{ width: '50%', height: 9, borderRadius: 3, background: '#E2E8F0', marginBottom: 9 }}/>
@@ -10287,7 +10188,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Appointments</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{
           padding: '64px 32px 24px',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -10331,7 +10232,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Appointments</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{
           padding: '64px 32px 24px',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -10377,7 +10278,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Find Care</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{ padding: '14px 16px 0' }}>
 
           {/* Search "input" — primary action, tappable to results */}
@@ -10426,7 +10327,7 @@ const SCREENS = {
 
           {/* Trust note */}
           <div style={{
-            padding: '10px 12px', background: '#F1F5F9', borderRadius: 10,
+            padding: '10px 12px', background: C.navBubble, borderRadius: R.lg,
             border: `1px solid ${C.border}`, marginBottom: 14,
             display: 'flex', gap: 8, alignItems: 'flex-start',
           }}>
@@ -10442,7 +10343,7 @@ const SCREENS = {
           <Annotation text="Provider/facility search backed by Candor via candor-search edge function. Member-facing access path needs confirmation."/>
 
           {/* Internal data status — Find Care */}
-          <details style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
+          <details style={{ borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
             <summary style={{
               fontFamily: nunito, fontSize: 11, fontWeight: 700,
               color: '#60A5FA', background: '#0F172A',
@@ -10488,7 +10389,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Search results</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
           {/* Active query chip */}
           <div style={{ padding: '12px 16px 4px', display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{
@@ -10556,7 +10457,7 @@ const SCREENS = {
                         <NetworkBadge network={p.network}/>
                         <span style={{
                           fontFamily: sfPro, fontSize: 11, color: C.textSecondary,
-                          background: '#F1F5F9', border: '1px solid #E2E8F0',
+                          background: C.navBubble, border: '1px solid #E2E8F0',
                           borderRadius: 4, padding: '2px 7px',
                         }}>{p.type}</span>
                       </div>
@@ -10576,14 +10477,14 @@ const SCREENS = {
           {/* Trust note */}
           <div style={{
             margin: '6px 16px 14px', padding: '10px 12px',
-            background: '#F1F5F9', borderRadius: 10, border: `1px solid ${C.border}`,
+            background: C.navBubble, borderRadius: R.lg, border: `1px solid ${C.border}`,
             fontFamily: sfPro, fontSize: 12, color: C.textSecondary, lineHeight: 1.5,
           }}>
             Network status and costs can change. Confirm with the provider before your visit.
           </div>
 
           {/* Internal panel */}
-          <details style={{ margin: '10px 16px 22px', borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
+          <details style={{ margin: '10px 16px 22px', borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F' }}>
             <summary style={{
               fontFamily: nunito, fontSize: 11, fontWeight: 700,
               color: '#60A5FA', background: '#0F172A',
@@ -10634,7 +10535,7 @@ const SCREENS = {
           <span style={{ fontFamily: nunito, fontSize: 16, fontWeight: 700, color: C.textPrimary, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
         </div>
 
-        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC', position: 'relative' }}>
+        <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt, position: 'relative' }}>
           <div style={{ padding: '14px 16px 0' }}>
 
             {/* Meta header card */}
@@ -10742,23 +10643,11 @@ const SCREENS = {
             </div>
 
             {/* Ask Navigator CTA — primary contextual action */}
-            <div onClick={() => go('provider-chat')} style={{
-              background: C.brandLight, borderRadius: 14, padding: '14px 14px',
-              border: `1.5px solid ${C.brandMid}`, cursor: 'pointer', marginBottom: 8,
-              display: 'flex', alignItems: 'center', gap: 11,
-              boxShadow: '0 2px 6px rgba(45,141,253,0.08)',
-            }}>
-              <MedefyMark size={24}/>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: nunito, fontSize: 14.5, fontWeight: 700, color: C.brand, marginBottom: 2, lineHeight: 1.25, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Ask Navigator about this provider</div>
-                <div style={{ fontFamily: sfPro, fontSize: 12.5, color: C.brand, opacity: 0.75, lineHeight: 1.35 }}>Get help with cost, network, or what to expect</div>
-              </div>
-              <span style={{ fontFamily: sfPro, fontSize: 16, color: C.brand, fontWeight: 600, opacity: 0.85, flexShrink: 0, marginLeft: 2 }}>→</span>
-            </div>
+            <AskNavCard title="Ask Navigator about this provider" subtitle="Get help with cost, network, or what to expect" onClick={() => go('provider-chat')} />
 
             {/* Talk to care guide CTA */}
             <div onClick={() => go('provider-help-chat')} style={{
-              background: C.surface, borderRadius: 12, padding: '13px 16px',
+              background: C.surface, borderRadius: R.xl, padding: '13px 16px',
               border: `1px solid ${C.border}`, cursor: 'pointer', marginBottom: 12,
               display: 'flex', alignItems: 'center', gap: 10,
             }}>
@@ -10776,7 +10665,7 @@ const SCREENS = {
 
             {/* Trust note */}
             <div style={{
-              padding: '10px 12px', background: '#F1F5F9', borderRadius: 10,
+              padding: '10px 12px', background: C.navBubble, borderRadius: R.lg,
               border: `1px solid ${C.border}`, marginBottom: 10,
               fontFamily: sfPro, fontSize: 12, color: C.textSecondary, lineHeight: 1.5,
             }}>
@@ -10786,7 +10675,7 @@ const SCREENS = {
             <Annotation text="Call / Get directions are prototype stubs. Scheduling is out of scope for v1 — wire only if appointments-api is available."/>
 
             {/* Internal panel */}
-            <details style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
+            <details style={{ borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
               <summary style={{
                 fontFamily: nunito, fontSize: 11, fontWeight: 700,
                 color: '#60A5FA', background: '#0F172A',
@@ -10814,7 +10703,7 @@ const SCREENS = {
             {toast && (
               <div style={{
                 position: 'fixed', bottom: 80, left: 32, right: 32, zIndex: 30,
-                background: '#0F172A', borderRadius: 10, padding: '11px 14px',
+                background: '#0F172A', borderRadius: R.lg, padding: '11px 14px',
                 display: 'flex', alignItems: 'flex-start', gap: 10,
                 animation: 'fadeSlideIn 0.22s ease-out',
                 boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
@@ -10860,7 +10749,7 @@ const SCREENS = {
           <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: '#F1F5F9', border: '1px solid #CBD5E1',
+              background: C.navBubble, border: '1px solid #CBD5E1',
               borderRadius: 20, padding: '5px 12px', maxWidth: 320,
             }}>
               <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
@@ -10894,7 +10783,7 @@ const SCREENS = {
           <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 16px' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: '#F1F5F9', border: '1px solid #CBD5E1',
+              background: C.navBubble, border: '1px solid #CBD5E1',
               borderRadius: 20, padding: '5px 12px',
             }}>
               <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
@@ -10934,7 +10823,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Search results</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         {/* Query + filter chip skeletons */}
         <div style={{ padding: '12px 16px 6px', display: 'flex', gap: 6 }}>
           <div style={{ width: 110, height: 22, borderRadius: 11, background: C.brandLight, border: `1px solid ${C.brandMid}` }}/>
@@ -10959,7 +10848,7 @@ const SCREENS = {
             }}>
               <div style={{ width: '70%', height: 14, borderRadius: 4, background: '#CBD5E1', marginBottom: 8, animation: i === 0 ? 'dotPulse 1.4s ease-in-out infinite' : 'none' }}/>
               <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
-                <div style={{ width: 70, height: 18, borderRadius: 4, background: '#F1F5F9', border: '1px solid #E2E8F0' }}/>
+                <div style={{ width: 70, height: 18, borderRadius: 4, background: C.navBubble, border: '1px solid #E2E8F0' }}/>
                 <div style={{ width: 80, height: 18, borderRadius: 4, background: C.greenLight, border: `1px solid ${C.greenBorder}`, opacity: 0.5 }}/>
               </div>
               <div style={{ width: '45%', height: 10, borderRadius: 3, background: '#EEF2F7' }}/>
@@ -10985,7 +10874,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Search results</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{
           padding: '64px 32px 24px',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -11015,7 +10904,7 @@ const SCREENS = {
         <div style={{ padding: '0 16px' }}>
           <Annotation text="candor-search failure should not block the Find Care landing — categories + search input should still render so the member can retry or change query."/>
 
-          <details style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
+          <details style={{ borderRadius: R.lg, overflow: 'hidden', border: '1px solid #1E3A5F', marginBottom: 22, marginTop: 10 }}>
             <summary style={{
               fontFamily: nunito, fontSize: 11, fontWeight: 700,
               color: '#60A5FA', background: '#0F172A',
@@ -11055,7 +10944,7 @@ const SCREENS = {
         <span style={{ fontFamily: nunito, fontSize: 17, fontWeight: 700, color: C.textPrimary, flex: 1 }}>Search results</span>
       </div>
 
-      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: '#F8FAFC' }}>
+      <div className="msg-list" style={{ flex: 1, overflowY: 'auto', background: C.surfaceAlt }}>
         <div style={{
           padding: '56px 32px 24px',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -11835,7 +11724,7 @@ const App = () => {
     background: 'transparent',
     border: '1px solid #1E3A5F',
     color: '#60A5FA',
-    borderRadius: 8,
+    borderRadius: R.md,
     padding: '6px 13px', fontSize: 11,
     cursor: 'pointer',
     fontFamily: nunito, fontWeight: 700,
