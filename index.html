@@ -98,11 +98,14 @@ const C = {
   resolvedBg:      '#fafafa',   // bg-secondary
 
   // Error
-  error:           '#ce2727',   // utility-error-700
+  error:           '#ce2727',   // utility-error-700 (badge text / strong error)
+  errorSolid:      '#e90000',   // bg-error-solid / text-error-primary-600 (destructive fill + error hint)
+  errorBorder:     '#ff8a8a',   // border-error_subtle (destructive input border)
   errorLight:      '#fff0f0',   // utility-error-50
 
   // Text (Figma: Colors/Text)
   textPrimary:     '#202035',   // text-primary 900
+  textStrong:      '#414651',   // text-secondary 700 (input labels, gray badge text)
   textSecondary:   '#535862',   // text-tertiary 600
   textMuted:       '#676771',   // text-quaternary 500
   white:           '#ffffff',
@@ -147,32 +150,53 @@ const SHADOW = {
 // Sizes scale the desktop md (40px) up to a mobile-friendly CTA tap target.
 // ─────────────────────────────────────────────────────────────────────────────
 const BTN_DEPTH = '0 1px 2px rgba(10,13,18,0.05), inset 0 0 0 1px rgba(10,13,18,0.18), inset 0 -2px 0 0 rgba(10,13,18,0.05)';
-const Btn = ({ label, onClick, hierarchy = 'primary', size = 'cta', full = true, iconLeading = null, iconTrailing = null, disabled = false }) => {
+const Btn = ({ label, onClick, hierarchy = 'primary', size = 'cta', full = true, iconLeading = null, iconTrailing = null, disabled = false, loading = false }) => {
+  const [hover, setHover] = React.useState(false);
+  // Sizes mirror the UU React Button (px/text/gap): sm/md text-sm gap-1; lg/xl text-md gap-1.5. cta is a mobile size.
   const SIZES = {
-    sm:  { height: 36, padH: 12, font: 14 },
-    md:  { height: 40, padH: 14, font: 14 },   // Figma md
-    lg:  { height: 44, padH: 16, font: 16 },
-    cta: { height: 52, padH: 20, font: 16 },   // full-width mobile primary
+    sm:  { height: 36, padH: 12, font: 14, gap: SP.xs },
+    md:  { height: 40, padH: 14, font: 14, gap: SP.xs },
+    lg:  { height: 44, padH: 16, font: 16, gap: SP.sm },
+    cta: { height: 52, padH: 20, font: 16, gap: SP.sm },   // full-width mobile primary
   };
   const s = SIZES[size] || SIZES.cta;
+  // Hover/disabled from UU theme.css: brand-solid_hover=brand-700, error-solid_hover=red-700, primary_hover=neutral-50,
+  // secondary text=text-secondary(700). Disabled=opacity-50 + not-allowed. Inner white/12 border is 1px (UU before:border).
   const LOOKS = {
-    primary:        { background: C.brand,      color: C.white,       border: '2px solid rgba(255,255,255,0.12)', boxShadow: BTN_DEPTH },
-    secondary:      { background: C.surface,    color: C.textPrimary, border: `1px solid ${C.borderStrong}`,       boxShadow: SHADOW.xs },
-    secondaryColor: { background: C.brandLight, color: C.brandText,   border: `1px solid ${C.brandMid}`,           boxShadow: SHADOW.xs },
-    destructive:    { background: C.error,      color: C.white,       border: '2px solid rgba(255,255,255,0.12)', boxShadow: BTN_DEPTH },
-    tertiary:       { background: 'transparent', color: C.brandText,  border: '2px solid transparent',             boxShadow: 'none' },
+    primary:        { bg: C.brand,       bgHover: C.brandText,  color: C.white,         border: '1px solid rgba(255,255,255,0.12)', boxShadow: BTN_DEPTH },
+    secondary:      { bg: C.surface,     bgHover: C.surfaceAlt, color: C.textStrong,    border: `1px solid ${C.borderStrong}`,      boxShadow: SHADOW.xs },
+    secondaryColor: { bg: C.brandLight,  bgHover: '#d6eaff',    color: C.brandText,     border: `1px solid ${C.brandMid}`,          boxShadow: SHADOW.xs },
+    destructive:    { bg: C.errorSolid,  bgHover: C.error,      color: C.white,         border: '1px solid rgba(255,255,255,0.12)', boxShadow: BTN_DEPTH },
+    tertiary:       { bg: 'transparent', bgHover: C.surfaceAlt, color: C.textSecondary, border: '1px solid transparent',            boxShadow: 'none' },
   };
   const look = LOOKS[hierarchy] || LOOKS.primary;
+  const off = disabled || loading;
   return (
-    <div onClick={disabled ? undefined : onClick} style={{
-      height: s.height, borderRadius: R.md, padding: `0 ${s.padH}px`, boxSizing: 'border-box',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: SP.xs,
-      width: full ? '100%' : 'auto', cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.5 : 1,
-      ...look,
-    }}>
-      {iconLeading}
-      <span style={{ fontFamily: sfText, fontSize: s.font, fontWeight: FW.semibold, lineHeight: 1, whiteSpace: 'nowrap' }}>{label}</span>
-      {iconTrailing}
+    <div
+      onClick={off ? undefined : onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        position: 'relative',
+        height: s.height, borderRadius: R.md, padding: `0 ${s.padH}px`, boxSizing: 'border-box',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        width: full ? '100%' : 'auto',
+        cursor: off ? 'not-allowed' : 'pointer', opacity: disabled ? 0.5 : 1,
+        background: (hover && !off) ? look.bgHover : look.bg,
+        color: look.color, border: look.border, boxShadow: look.boxShadow,
+        transition: 'background 0.1s ease',
+      }}>
+      {loading && (
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ position: 'absolute' }}>
+          <circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="2" opacity="0.3"/>
+          <circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="2" strokeDasharray="12.5 50" strokeLinecap="round" style={{ transformOrigin: 'center', animation: 'spin 0.6s linear infinite' }}/>
+        </svg>
+      )}
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: s.gap, visibility: loading ? 'hidden' : 'visible' }}>
+        {iconLeading}
+        <span style={{ fontFamily: sfText, fontSize: s.font, fontWeight: FW.semibold, lineHeight: 1, whiteSpace: 'nowrap' }}>{label}</span>
+        {iconTrailing}
+      </span>
     </div>
   );
 };
@@ -185,24 +209,24 @@ const Btn = ({ label, onClick, hierarchy = 'primary', size = 'cta', full = true,
 // ─────────────────────────────────────────────────────────────────────────────
 const Input = ({ label, required = false, placeholder = '', value, onChange, hint, destructive = false, iconLeading = null, type = 'text', disabled = false }) => {
   const [focused, setFocused] = React.useState(false);
-  const borderColor = destructive ? C.error : (focused ? C.brand : C.borderStrong);
-  const ring = destructive
-    ? '0 0 0 4px rgba(206,39,39,0.18)'
-    : (focused ? '0 0 0 4px rgba(6,104,224,0.18)' : SHADOW.xs);
+  // Figma Input states: focused = 2px border-brand (Brand 500) + shadow-xs; destructive = 1px border-error_subtle;
+  // default = 1px border-primary. All states use shadow-xs (no invented focus ring; the 4px ring is a UU-React item).
+  const borderColor = destructive ? (focused ? C.errorSolid : C.errorBorder) : (focused ? C.brand500 : C.borderStrong);
+  const borderWidth = focused ? 2 : 1;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: SP.sm, width: '100%' }}>
       {label && (
-        <div style={{ fontFamily: sfText, fontSize: 14, lineHeight: '20px', fontWeight: FW.medium, color: C.textSecondary, display: 'flex', gap: SP.xxs }}>
+        <div style={{ fontFamily: sfText, fontSize: 14, lineHeight: '20px', fontWeight: FW.medium, color: C.textStrong, display: 'flex', gap: SP.xxs }}>
           <span>{label}</span>
           {required && <span style={{ color: C.brand }}>*</span>}
         </div>
       )}
       <div style={{
         display: 'flex', alignItems: 'center', gap: SP.md,
-        background: disabled ? C.surfaceAlt : C.surface,
-        border: `1px solid ${borderColor}`, borderRadius: R.md,
-        padding: '10px 14px', boxShadow: ring, boxSizing: 'border-box',
-        opacity: disabled ? 0.6 : 1,
+        background: C.surface,
+        border: `${borderWidth}px solid ${borderColor}`, borderRadius: R.md,
+        padding: '10px 14px', boxShadow: SHADOW.xs, boxSizing: 'border-box',
+        opacity: disabled ? 0.5 : 1, cursor: disabled ? 'not-allowed' : 'text',
       }}>
         {iconLeading}
         <input
@@ -215,7 +239,7 @@ const Input = ({ label, required = false, placeholder = '', value, onChange, hin
         />
       </div>
       {hint && (
-        <div style={{ fontFamily: sfText, fontSize: 14, lineHeight: '20px', color: destructive ? C.error : C.textSecondary }}>
+        <div style={{ fontFamily: sfText, fontSize: 14, lineHeight: '20px', color: destructive ? C.errorSolid : C.textSecondary }}>
           {hint}
         </div>
       )}
@@ -292,14 +316,14 @@ const Badge = ({ status }) => {
     guide:    { label: 'Guide',    bg: C.brandLight,   border: C.brandMid,   color: C.brandText  },
     waiting:  { label: 'Waiting',  bg: C.amberLight,   border: C.amberBorder, color: C.amberText  },
     active:   { label: 'Active',   bg: C.greenLight,   border: C.greenBorder, color: C.greenText  },
-    resolved: { label: 'Resolved', bg: C.resolvedBg,   border: C.border,      color: C.resolvedGray },
+    resolved: { label: 'Resolved', bg: C.resolvedBg,   border: C.border,      color: C.textStrong },
   };
   const s = map[status] || map.resolved;
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: SP.xs,
       background: s.bg, border: `1px solid ${s.border}`,
-      borderRadius: R.full, padding: '2px 10px',
+      borderRadius: R.full, padding: '2px 8px',
       fontFamily: sfText, fontSize: 12, lineHeight: '18px', fontWeight: FW.medium, color: s.color,
       whiteSpace: 'nowrap',
     }}>{s.label}</span>
