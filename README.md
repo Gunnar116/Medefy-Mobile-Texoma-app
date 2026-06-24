@@ -1,4 +1,4 @@
-# Guided Clarity — Texoma Chat Prototype
+# Texoma Chat Prototype
 
 A clickable, self-contained design prototype for the Medefy / Texoma mobile experience: an AI-chat ("Navigator") and benefits-navigation flow with escalation to a human Care Guide.
 
