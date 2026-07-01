@@ -763,21 +763,25 @@ const ResolvedBanner = () => (
 // Escalation CTA — persistent secondary action above composer in AI phase
 // Brand-blue at full opacity so members notice it; smaller than the composer so it doesn't overpower
 const EscalationBar = ({ pressed = false, onPress }) => (
-  <div onClick={onPress} style={{
-    height: 44, flexShrink: 0,
-    background: pressed ? '#DBEAFE' : C.brandLight,
-    borderTop: `1px solid ${C.brandMid}`,
-    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
-    cursor: onPress ? 'pointer' : 'default', transition: 'background 0.15s',
+  <div style={{
+    flexShrink: 0, background: C.surface,
+    padding: '10px 16px',
   }}>
-    <svg width="15" height="15" viewBox="0 0 18 18" fill="none">
-      <circle cx="9" cy="6.5" r="3" stroke={C.brand} strokeWidth="1.5"/>
-      <path d="M3 15.5 C3 12.5 5.7 10 9 10 C12.3 10 15 12.5 15 15.5" stroke={C.brand} strokeWidth="1.5" strokeLinecap="round"/>
-    </svg>
-    <span style={{ fontFamily: sfPro, fontSize: 13, fontWeight: 600, color: C.brand }}>
-      Talk to a care guide
-    </span>
-    <span style={{ fontSize: 14, color: C.brand, opacity: 0.55 }}>›</span>
+    <div onClick={onPress} style={{
+      background: pressed ? '#DBEAFE' : C.brandLight,
+      border: `1px solid ${C.brandMid}`,
+      borderRadius: 12,
+      padding: '14px 16px',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+      cursor: onPress ? 'pointer' : 'default', transition: 'background 0.15s',
+    }}>
+      <span style={{ fontFamily: sfPro, fontSize: 15, fontWeight: 600, color: C.brand }}>
+        Talk to a care guide
+      </span>
+      <svg width="9" height="16" viewBox="0 0 9 16" fill="none">
+        <path d="M1 1 L8 8 L1 15" stroke={C.brand} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    </div>
   </div>
 );
 
